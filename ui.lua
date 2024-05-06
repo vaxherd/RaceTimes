@@ -62,7 +62,6 @@ end
 
 function RaceLabel:OnClick(button, down)
     C_Map.SetUserWaypoint(self.race.waypoint)
-    RaceTimesFrame:Hide()
     if not WorldMapFrame:IsShown() then ToggleWorldMap() end
     WorldMapFrame:SetMapID(self.race.waypoint.uiMapID)
 end
