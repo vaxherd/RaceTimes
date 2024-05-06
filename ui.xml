@@ -1,0 +1,89 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+  <Button name="RaceTimesTypeButtonTemplate" inherits="UIPanelButtonNoTooltipTemplate" virtual="true">
+    <Size x="100" y="21"/>
+    <Scripts>
+      <OnClick>
+        RaceTimes_ChangeType(self:GetID())
+      </OnClick>
+    </Scripts>
+  </Button>
+
+  <Frame name="RaceTimesFrame" frameStrata="HIGH" enableMouse="true" parent="UIParent">
+    <size x="360" y="600"/>
+    <Anchors>
+      <Anchor point="CENTER" y="100"/>
+    </Anchors>
+
+    <Frames>
+      <Frame parentKey="border" inherits="DialogBorderTemplate">
+        <Layers>
+          <Layer level="ARTWORK">
+            <Texture file="Interface/DialogFrame/UI-DialogBox-Divider">
+              <TexCoords left="0" right="0.0625" top="0" bottom="0.5"/>
+              <Size x="8" y="16"/>
+              <Anchors>
+                <Anchor point="TOPLEFT" x="8" y="-84"/>
+              </Anchors>
+            </Texture>
+            <Texture file="Interface/DialogFrame/UI-DialogBox-Divider">
+              <TexCoords left="0.6875" right="0.75390625" top="0" bottom="0.5"/>
+              <Size x="9" y="16"/>
+              <Anchors>
+                <Anchor point="TOPRIGHT" x="-8" y="-84"/>
+              </Anchors>
+            </Texture>
+            <Texture file="Interface/DialogFrame/UI-DialogBox-Divider">
+              <TexCoords left="0.0625" right="0.6875" top="0" bottom="0.5"/>
+              <Size y="16"/>
+              <Anchors>
+                <Anchor point="TOPLEFT" x="16" y="-84"/>
+                <Anchor point="TOPRIGHT" x="-17" y="-84"/>
+              </Anchors>
+            </Texture>
+          </Layer>
+        </Layers>
+      </Frame>
+
+      <Frame parentKey="header" inherits="DialogHeaderTemplate">
+        <KeyValues>
+          <KeyValue key="textString" value="Dragonriding Race Times"/>
+        </KeyValues>
+        <Scripts>
+          <OnShow>
+            self:SetFrameLevel(self:GetParent():GetFrameLevel()+5)
+          </OnShow>
+        </Scripts>
+      </Frame>
+
+      <Frame parentKey="type_select">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="10" y="-27"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-10" y="-84"/>
+        </Anchors>
+        <!-- Buttons are added programmatically -->
+      </Frame>
+
+      <ScrollFrame parentKey="scroll" inherits="UIPanelScrollFrameTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="10" y="-99"/>
+          <Anchor point="BOTTOMRIGHT" x="-32" y="10"/>
+        </Anchors>
+        <ScrollChild>
+          <Frame parentKey="content">
+          </Frame>
+        </ScrollChild>
+      </ScrollFrame>
+    </Frames>
+
+    <Scripts>
+      <OnShow>
+        RaceTimes_LoadData(self)
+      </OnShow>
+      <OnKeyDown>
+        if key == "ESCAPE" then self:Hide() end
+      </OnKeyDown>
+    </Scripts>
+  </Frame>
+
+</Ui>
