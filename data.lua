@@ -14,11 +14,12 @@ RaceTimes.Type = {
 ------------------------------------------------------------------------
 
 -- Ordered list of all known races, broken down by zone.
--- We don't currently make use of the quest ID, but we save it for
--- future reference just in case it becomes useful.
+-- We don't currently make use of the quest or aura IDs, but we save them
+-- for future reference just in case they become useful.
 
-local function Race(name, types)
-    local race = {name = name, types = {}}
+local function Race(map_x, map_y, times_aura, name, types)
+    local race = {name = name, map_x = map_x, map_y = map_y,
+                  times_aura = times_aura, types = {}}
     for type, data in pairs(types) do
         race.types[RaceTimes.Type[type]] =
             {quest = data[1], currency = data[2],
@@ -28,70 +29,115 @@ local function Race(name, types)
 end
 
 local RACES = {
-    {"The Waking Shores", {
-        Race("Apex Canopy River Run", {NORMAL = {66732, 2054, 52, 55}}),
-        Race("Emberflow Flight",      {NORMAL = {66727, 2052, 50, 53}}),
-        Race("Flashfrost Flyover",    {NORMAL = {66710, 2046, 63, 66}}),
-        Race("Ruby Lifeshrine Loop",  {NORMAL = {66679, 2042, 53, 56}}),
-        Race("Uktulut Coaster",       {NORMAL = {66777, 2056, 45, 48}}),
-        Race("Wild Preserve Circuit", {NORMAL = {66725, 2050, 40, 43}}),
-        Race("Wild Preserve Slalom",  {NORMAL = {66721, 2048, 42, 45}}),
-        Race("Wingrest Roundabout",   {NORMAL = {66786, 2058, 53, 56}}),
+    {"The Waking Shores", 2022, {
+        Race(23.25, 84.31, 415640, "Apex Canopy River Run",
+                                   {NORMAL = {66732, 2054, 52, 55}}),
+        Race(41.96, 67.31, 415639, "Emberflow Flight",
+                                   {NORMAL = {66727, 2052, 50, 53}}),
+        Race(62.75, 74.02, 415643, "Flashfrost Flyover",
+                                   {NORMAL = {66710, 2046, 63, 66}}),
+        Race(63.30, 70.91, 415541, "Ruby Lifeshrine Loop",
+                                   {NORMAL = {66679, 2042, 53, 56}}),
+        Race(55.44, 41.15, 415641, "Uktulut Coaster",
+                                   {NORMAL = {66777, 2056, 45, 48}}),
+        Race(42.58, 94.46, 415644, "Wild Preserve Circuit",
+                                   {NORMAL = {66725, 2050, 40, 43}}),
+        Race(47.00, 85.59, 415638, "Wild Preserve Slalom",
+                                   {NORMAL = {66721, 2048, 42, 45}}),
+        Race(73.18, 33.95, 415642, "Wingrest Roundabout",
+                                   {NORMAL = {66786, 2058, 53, 56}}),
     }},
 
-    {"Ohn'ahran Plains", {
-        Race("Emerald Garden Ascent",   {NORMAL = {66885, 2066, 63, 66}}),
-        Race("Fen Flythrough",          {NORMAL = {66877, 2062, 48, 51}}),
-        Race("Maruukai Dash",           {NORMAL = {66921, 2069, 25, 28}}),
-        Race("Mirror of the Sky Dash",  {NORMAL = {66933, 2070, 26, 29}}),
-        Race("Ravine River Run",        {NORMAL = {66880, 2064, 49, 52}}),
-        Race("River Rapids Route",      {NORMAL = {70710, 2119, 48, 51}}),
-        Race("Sundapple Copse Circuit", {NORMAL = {66835, 2060, 49, 52}}),
+    {"Ohn'ahran Plains", 2023, {
+        Race(25.69, 55.10, 415654, "Emerald Garden Ascent",
+                                   {NORMAL = {66885, 2066, 63, 66}}),
+        Race(86.24, 35.85, 415652, "Fen Flythrough",
+                                   {NORMAL = {66877, 2062, 48, 51}}),
+        Race(59.92, 35.57, 415656, "Maruukai Dash",
+                                   {NORMAL = {66921, 2069, 25, 28}}),
+        Race(47.47, 70.65, 415657, "Mirror of the Sky Dash",
+                                   {NORMAL = {66933, 2070, 26, 29}}),
+        Race(80.87, 72.22, 415653, "Ravine River Run",
+                                   {NORMAL = {66880, 2064, 49, 52}}),
+        Race(43.73, 66.79, 415658, "River Rapids Route",
+                                   {NORMAL = {70710, 2119, 48, 51}}),
+        Race(63.72, 30.52, 415650, "Sundapple Copse Circuit",
+                                   {NORMAL = {66835, 2060, 49, 52}}),
     }},
 
-    {"Azure Span", {
-        Race("Archive Ambit",     {NORMAL = {67741, 2089, 91, 94}}),
-        Race("Azure Span Slalom", {NORMAL = {67002, 2076, 58, 61}}),
-        Race("Azure Span Sprint", {NORMAL = {66946, 2074, 63, 66}}),
-        Race("Frostland Flyover", {NORMAL = {67565, 2085, 76, 79}}),
-        Race("Iskaara Tour",      {NORMAL = {67296, 2083, 75, 78}}),
-        Race("Vakthros Ascent",   {NORMAL = {67031, 2078, 58, 61}}),
+    {"Azure Span", 2024, {
+        Race(42.26, 56.77, 415664, "Archive Ambit",
+                                   {NORMAL = {67741, 2089, 91, 94}}),
+        Race(20.94, 22.63, 415660, "Azure Span Slalom",
+                                   {NORMAL = {67002, 2076, 58, 61}}),
+        Race(47.90, 40.79, 415659, "Azure Span Sprint",
+                                   {NORMAL = {66946, 2074, 63, 66}}),
+        Race(48.46, 35.80, 415663, "Frostland Flyover",
+                                   {NORMAL = {67565, 2085, 76, 79}}),
+        Race(16.57, 49.38, 415662, "Iskaara Tour",
+                                   {NORMAL = {67296, 2083, 75, 78}}), --68.784
+        Race(71.26, 24.66, 415661, "Vakthros Ascent",
+                                   {NORMAL = {67031, 2078, 58, 61}}),
     }},
 
-    {"Thaldraszus", {
-        Race("Academy Ascent",        {NORMAL = {70059, 2098, 54, 57}}),
-        Race("Caverns Criss-Cross",   {NORMAL = {70161, 2103, 50, 53}}),
-        Race("Cliffside Circuit",     {NORMAL = {70051, 2096, 69, 72}}),
-        Race("Flowing Forest Flight", {NORMAL = {67095, 2080, 49, 52}}),
-        Race("Garden Gallivant",      {NORMAL = {70157, 2101, 61, 64}}),
-        Race("Tyrhold Trial",         {NORMAL = {69957, 2092, 81, 84}}),
+    {"Thaldraszus", 2025, {
+        Race(60.28, 41.59, 415669, "Academy Ascent",
+                                   {NORMAL = {70059, 2098, 54, 57}}),
+        Race(58.04, 33.62, 415671, "Caverns Criss-Cross",
+                                   {NORMAL = {70161, 2103, 50, 53}}),
+        Race(37.63, 48.94, 415668, "Cliffside Circuit",
+                                   {NORMAL = {70051, 2096, 69, 72}}),
+        Race(57.76, 75.02, 415665, "Flowing Forest Flight",
+                                   {NORMAL = {67095, 2080, 49, 52}}),
+        Race(39.50, 76.19, 415670, "Garden Gallivant",
+                                   {NORMAL = {70157, 2101, 61, 64}}),
+        Race(57.22, 66.91, 415666, "Tyrhold Trial",
+                                   {NORMAL = {69957, 2092, 81, 84}}),
     }},
 
-    {"Forbidden Reach", {
-        Race("Aerie Chasm Cruise",         {NORMAL = {73025, 2203, 53, 56}}),
-        Race("Caldera Coaster",            {NORMAL = {73033, 2205, 58, 61}}),
-        Race("Forbidden Reach Rush",       {NORMAL = {73061, 2206, 59, 62}}),
-        Race("Morqut Ascent",              {NORMAL = {73020, 2202, 52, 55}}),
-        Race("Southern Reach Route",       {NORMAL = {73029, 2204, 70, 73}}),
-        Race("Stormsunder Crater Circuit", {NORMAL = {73017, 2201, 43, 46}}),
+    {"Forbidden Reach", 2151, {
+        Race(63.07, 51.97, 415791, "Aerie Chasm Cruise",
+                                   {NORMAL = {73025, 2203, 53, 56}}),
+        Race(41.33, 14.56, 415793, "Caldera Coaster",
+                                   {NORMAL = {73033, 2205, 58, 61}}),
+        Race(49.40, 60.08, 415794, "Forbidden Reach Rush",
+                                   {NORMAL = {73061, 2206, 59, 62}}),
+        Race(31.29, 65.76, 415790, "Morqut Ascent",
+                                   {NORMAL = {73020, 2202, 52, 55}}),
+        Race(63.63, 84.07, 415792, "Southern Reach Route",
+                                   {NORMAL = {73029, 2204, 70, 73}}),
+        Race(76.11, 65.65, 415789, "Stormsunder Crater Circuit",
+                                   {NORMAL = {73017, 2201, 43, 46}}),
     }},
 
-    {"Zaralek Cavern", {
-        Race("Brimstone Scramble", {NORMAL = {74939, 2248, 69, 72}}),
-        Race("Caldera Cruise",     {NORMAL = {74889, 2247, 75, 80}}),
-        Race("Crystal Circuit",    {NORMAL = {74839, 2246, 63, 68}}),
-        Race("Loamm Roamm",        {NORMAL = {74972, 2250, 55, 60}}),
-        Race("Shimmering Slalom",  {NORMAL = {74951, 2249, 75, 80}}),
-        Race("Sulfur Sprint",      {NORMAL = {75035, 2251, 64, 67}}),
+    {"Zaralek Cavern", 2133, {
+        Race(54.48, 23.73, 415797, "Brimstone Scramble",
+                                   {NORMAL = {74939, 2248, 69, 72}}),
+        Race(39.04, 50.00, 415796, "Caldera Cruise",
+                                   {NORMAL = {74889, 2247, 75, 80}}),
+        Race(38.74, 60.62, 415795, "Crystal Circuit",
+                                   {NORMAL = {74839, 2246, 63, 68}}),
+        Race(58.14, 57.61, 415799, "Loamm Roamm",
+                                   {NORMAL = {74972, 2250, 55, 60}}),
+        Race(58.71, 45.04, 415798, "Shimmering Slalom",
+                                   {NORMAL = {74951, 2249, 75, 80}}),
+        Race(51.25, 46.68, 415800, "Sulfur Sprint",
+                                   {NORMAL = {75035, 2251, 64, 67}}),
     }},
 
-    {"Emerald Dream", {
-        Race("Canopy Concours",      {NORMAL = {78102, 2680, 105, 110}}),
-        Race("Emerald Amble",        {NORMAL = {78115, 2681, 84, 89}}),
-        Race("Shoreline Switchback", {NORMAL = {78016, 2679, 73, 78}}),
-        Race("Smoldering Sprint",    {NORMAL = {77983, 2677, 80, 85}}),
-        Race("Viridescent Venture",  {NORMAL = {77996, 2678, 78, 83}}),
-        Race("Ysera Invitational",   {NORMAL = {77841, 2676, 98, 103}}),
+    {"Emerald Dream", 2200, {
+        Race(62.79, 88.13, 426030, "Canopy Concours",
+                                   {NORMAL = {78102, 2680, 105, 110}}),
+        Race(32.35, 48.26, 426031, "Emerald Amble",
+                                   {NORMAL = {78115, 2681, 84, 89}}),
+        Race(69.61, 52.62, 426029, "Shoreline Switchback",
+                                   {NORMAL = {78016, 2679, 73, 78}}),
+        Race(37.17, 44.08, 426027, "Smoldering Sprint",
+                                   {NORMAL = {77983, 2677, 80, 85}}),
+        Race(35.15, 55.23, 426028, "Viridescent Venture",
+                                   {NORMAL = {77996, 2678, 78, 83}}),
+        Race(59.10, 28.82, 426026, "Ysera Invitational",
+                                   {NORMAL = {77841, 2676, 98, 103}}),
     }},
 }
 
@@ -101,7 +147,7 @@ local RACES = {
 local function GetRace(zone, race)
     for _, zone_data in ipairs(RACES) do
         if zone_data[1] == zone then
-            for _, race_data in ipairs(zone_data[2]) do
+            for _, race_data in ipairs(zone_data[3]) do
                 if race_data.name == race then
                     return race_data
                 end
@@ -113,30 +159,30 @@ end
 
 ------------------------------------------------------------------------
 
--- Calls callback(zone) for each zone with races.
+-- Calls callback(zone, map_id) for each zone with races.
 function RaceTimes.Data.EnumerateZones(callback)
     for _, data in ipairs(RACES) do
-        callback(data[1])
+        callback(data[1], data[2])
     end
 end
 
--- Calls callback(race) for each race in the given zone.
+-- Calls callback(race, map_x, map_y) for each race in the given zone.
 function RaceTimes.Data.EnumerateRaces(zone, callback)
     for _, zone_data in ipairs(RACES) do
         if zone_data[1] == zone then
-            for _, race in ipairs(zone_data[2]) do
-                callback(race.name)
+            for _, race in ipairs(zone_data[3]) do
+                callback(race.name, race.map_x, race.map_y)
             end
         end
     end
 end
 
--- Calls callback(zone, race) for each race in each zone
+-- Calls callback(zone, map_id, race, map_x, map_y) for each race in each zone
 function RaceTimes.Data.EnumerateAllRaces(callback)
     for _, zone_data in ipairs(RACES) do
-        local zone, zone_races = unpack(zone_data)
+        local zone, map_id, zone_races = unpack(zone_data)
         for _, race in ipairs(zone_races) do
-            callback(zone, race.name)
+            callback(zone, map_id, race.name, race.map_x, race.map_y)
         end
     end
 end
@@ -159,8 +205,8 @@ function RaceTimes.Data.GetTime(zone, race, type)
     return time, rank
 end
 
--- Debugging / data collection convenience function: prints the gold and
--- silver times for the most recently run race.
+-- Debugging / data collection convenience function: prints the quest ID,
+-- completion time, and gold/silver times for the most recently run race.
 function RaceTimes.Data.DumpLastTimes()
     local function Read(currency)
         return C_CurrencyInfo.GetCurrencyInfo(currency).quantity

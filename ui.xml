@@ -10,7 +10,7 @@
   </Button>
 
   <Frame name="RaceTimesFrame" frameStrata="HIGH" enableMouse="true" parent="UIParent">
-    <size x="360" y="600"/>
+    <size x="370" y="600"/>
     <Anchors>
       <Anchor point="CENTER" y="100"/>
     </Anchors>

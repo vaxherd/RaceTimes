@@ -33,6 +33,44 @@ local BUTTON_LAYOUT = {
 
 ------------------------------------------------------------------------
 
+local RaceLabel = class()
+
+function RaceLabel:__constructor(parent, name, map_id, map_x, map_y)
+    self.name = name
+    self.waypoint =
+        UiMapPoint.CreateFromCoordinates(map_id, map_x/100, map_y/100)
+
+    local f = CreateFrame("Button", nil, parent)
+    self.frame = f
+
+    local icon = f:CreateTexture(nil, "ARTWORK")
+    icon:SetPoint("LEFT")
+    icon:SetSize(13, 13)
+    icon:SetAtlas("Waypoint-MapPin-ChatIcon")
+
+    local label = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    label:SetPoint("LEFT", icon, "RIGHT", 2, 0)
+    label:SetTextColor(0.8, 0.8, 0.8)
+    label:SetTextScale(TEXT_SCALE)
+    label:SetText(name)
+
+    f:SetHeight(label:GetStringHeight())
+    f:SetScript("OnClick", function(_,...) self:OnClick(...) end)
+end
+
+function RaceLabel:SetPoint(...)
+    self.frame:SetPoint(...)
+end
+
+function RaceLabel:OnClick(button, down)
+    C_Map.SetUserWaypoint(self.waypoint)
+    RaceTimesFrame:Hide()
+    if not WorldMapFrame:IsShown() then ToggleWorldMap() end
+    WorldMapFrame:SetMapID(self.waypoint.uiMapID)
+end
+
+------------------------------------------------------------------------
+
 local TimeLabel = class()
 
 function TimeLabel:__constructor(parent)
@@ -71,6 +109,10 @@ function TimeLabel:__constructor(parent)
     text_label:SetWidth(TimeLabel.width)
     ms_label:SetWidth(TimeLabel.ms_width)
     sec_label:SetWidth(TimeLabel.width - TimeLabel.ms_width)
+end
+
+function TimeLabel:GetFrame()
+    return self.frame
 end
 
 function TimeLabel:SetSinglePoint(...)
@@ -150,23 +192,21 @@ local function RaceTag(zone, race)
     return zone .. "/" .. race
 end
 
-local function AddRace(frame, zone, race)
+local function AddRace(frame, zone, map_id, race, map_x, map_y)
     local f = frame.scroll.content
 
-    local label = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    label:SetPoint("TOPLEFT", 40, frame.yofs)
-    label:SetTextColor(0.8, 0.8, 0.8)
-    label:SetTextScale(TEXT_SCALE)
-    label:SetText(race)
+    local time_label = TimeLabel(f)
+    frame.time_labels[RaceTag(zone, race)] = time_label
+    time_label:SetSinglePoint("TOPRIGHT", -5, frame.yofs)
 
-    label = TimeLabel(f)
-    frame.time_labels[RaceTag(zone, race)] = label
-    label:SetSinglePoint("TOPRIGHT", -5, frame.yofs)
+    local race_label = RaceLabel(f, race, map_id, map_x, map_y)
+    race_label:SetPoint("TOPLEFT", 30, frame.yofs)
+    race_label:SetPoint("TOPRIGHT", time_label:GetFrame(), "TOPLEFT", -5, 0)
 
     frame.yofs = frame.yofs - 25
 end
 
-local function AddZone(frame, zone)
+local function AddZone(frame, zone, map_id)
     local f = frame.scroll.content
 
     local label = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
@@ -176,14 +216,14 @@ local function AddZone(frame, zone)
     frame.yofs = frame.yofs - 50
 
     RaceTimes.Data.EnumerateRaces(
-        zone, function(race) AddRace(frame,zone,race) end)
+        zone, function(...) AddRace(frame, zone, map_id, ...) end)
 end
 
 function RaceTimes_LoadData(frame)  -- referenced by XML
     local time_labels = frame.time_labels
     if not time_labels then return end  -- when called from XML load
     local type = RaceTimes.UI.active_type
-    RaceTimes.Data.EnumerateAllRaces(function(zone, race)
+    RaceTimes.Data.EnumerateAllRaces(function(zone, map_id, race)
         local label = time_labels[RaceTag(zone, race)]
         local time, rank = RaceTimes.Data.GetTime(zone, race, type)
         label:SetTime(time, rank)
@@ -230,7 +270,8 @@ function RaceTimes.UI.Init()
 
     frame.time_labels = {}
     frame.yofs = 0
-    RaceTimes.Data.EnumerateZones(function(zone) AddZone(frame,zone) end)
+    RaceTimes.Data.EnumerateZones(
+        function(zone,map_id) AddZone(frame,zone,map_id) end)
     frame.scroll.content:SetSize(frame.scroll:GetWidth(), -(frame.yofs)+10)
 
     RaceTimes_ChangeType(RaceTimes.Type.NORMAL)
