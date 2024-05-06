@@ -35,10 +35,8 @@ local BUTTON_LAYOUT = {
 
 local RaceLabel = class()
 
-function RaceLabel:__constructor(parent, name, map_id, map_x, map_y)
-    self.name = name
-    self.waypoint =
-        UiMapPoint.CreateFromCoordinates(map_id, map_x/100, map_y/100)
+function RaceLabel:__constructor(parent, race)
+    self.race = race
 
     local f = CreateFrame("Button", nil, parent)
     self.frame = f
@@ -52,7 +50,7 @@ function RaceLabel:__constructor(parent, name, map_id, map_x, map_y)
     label:SetPoint("LEFT", icon, "RIGHT", 2, 0)
     label:SetTextColor(0.8, 0.8, 0.8)
     label:SetTextScale(TEXT_SCALE)
-    label:SetText(name)
+    label:SetText(race.name)
 
     f:SetHeight(label:GetStringHeight())
     f:SetScript("OnClick", function(_,...) self:OnClick(...) end)
@@ -63,10 +61,10 @@ function RaceLabel:SetPoint(...)
 end
 
 function RaceLabel:OnClick(button, down)
-    C_Map.SetUserWaypoint(self.waypoint)
+    C_Map.SetUserWaypoint(self.race.waypoint)
     RaceTimesFrame:Hide()
     if not WorldMapFrame:IsShown() then ToggleWorldMap() end
-    WorldMapFrame:SetMapID(self.waypoint.uiMapID)
+    WorldMapFrame:SetMapID(self.race.waypoint.uiMapID)
 end
 
 ------------------------------------------------------------------------
@@ -121,7 +119,7 @@ function TimeLabel:SetSinglePoint(...)
     f:SetPoint(...)
 end
 
--- Expects values returned from RaceTimes.Data.GetTime().
+-- Expects values returned from Race:GetTime().
 function TimeLabel:SetTime(time, rank)
     local text_label = self.text_label
     local ms_label = self.ms_label
@@ -192,14 +190,14 @@ local function RaceTag(zone, race)
     return zone .. "/" .. race
 end
 
-local function AddRace(frame, zone, map_id, race, map_x, map_y)
+local function AddRace(frame, zone, race)
     local f = frame.scroll.content
 
     local time_label = TimeLabel(f)
-    frame.time_labels[RaceTag(zone, race)] = time_label
+    frame.time_labels[RaceTag(zone.name, race.name)] = time_label
     time_label:SetSinglePoint("TOPRIGHT", -5, frame.yofs)
 
-    local race_label = RaceLabel(f, race, map_id, map_x, map_y)
+    local race_label = RaceLabel(f, race)
     race_label:SetPoint("TOPLEFT", 30, frame.yofs)
     race_label:SetPoint("TOPRIGHT", time_label:GetFrame(), "TOPLEFT", -5, 0)
 
@@ -212,20 +210,19 @@ local function AddZone(frame, zone, map_id)
     local label = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
     label:SetPoint("TOPLEFT", 10, frame.yofs-20)
     label:SetTextScale(TEXT_SCALE)
-    label:SetText(zone)
+    label:SetText(zone.name)
     frame.yofs = frame.yofs - 50
 
-    RaceTimes.Data.EnumerateRaces(
-        zone, function(...) AddRace(frame, zone, map_id, ...) end)
+    zone:EnumerateRaces(function(race) AddRace(frame,zone,race) end)
 end
 
 function RaceTimes_LoadData(frame)  -- referenced by XML
     local time_labels = frame.time_labels
     if not time_labels then return end  -- when called from XML load
     local type = RaceTimes.UI.active_type
-    RaceTimes.Data.EnumerateAllRaces(function(zone, map_id, race)
-        local label = time_labels[RaceTag(zone, race)]
-        local time, rank = RaceTimes.Data.GetTime(zone, race, type)
+    RaceTimes.Data.EnumerateRaces(function(zone, race)
+        local label = time_labels[RaceTag(zone.name, race.name)]
+        local time, rank = race:GetTime(type)
         label:SetTime(time, rank)
     end)
 end
