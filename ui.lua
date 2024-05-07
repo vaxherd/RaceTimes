@@ -243,6 +243,9 @@ function RaceTimes.UI.Init()
     local frame = RaceTimesFrame  -- from XML
     frame:Hide()
 
+    -- Allow ourselves to be cleanly closed via CloseAllWindows()
+    tinsert(UISpecialFrames, "RaceTimesFrame")
+
     local type_select = frame.type_select
     frame.buttons = {}
     local layout = {}
