@@ -5,8 +5,7 @@ local class = RaceTimes.class
 RaceTimes.UI = {}
 
 local TEXT_SCALE = 1.2
-local COLOR_DARK_GREY = {0.5, 0.5, 0.5}
-local COLOR_GREY = {0.8, 0.8, 0.8}
+local COLOR_GREY = {0.5, 0.5, 0.5}
 local COLOR_BRONZE = {0.6, 0.4, 0.1}
 local COLOR_SILVER = {0.9, 0.9, 0.97}
 local COLOR_GOLD = {1.0, 0.75, 0.2}
@@ -125,7 +124,7 @@ function TimeLabel:SetTime(time, rank)
     local sec_label = self.sec_label
 
     if not time then
-        text_label:SetTextColor(unpack(COLOR_DARK_GREY))
+        text_label:SetTextColor(unpack(COLOR_GREY))
         text_label:SetText("—")
         text_label:Show()
         ms_label:Hide()
