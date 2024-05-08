@@ -202,10 +202,11 @@ local function AddRace(frame, zone, race)
     frame.yofs = frame.yofs - 25
 end
 
-local function AddZone(frame, zone, map_id)
-    local f = frame.scroll.content
+local function AddZone(frame, zone)
+    frame.zone_anchors[zone.map_id] = -(frame.yofs)
 
-    local label = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
+    local label = frame.scroll.content:CreateFontString(
+        nil, "ARTWORK", "GameFontHighlightLarge")
     label:SetPoint("TOPLEFT", 10, frame.yofs-20)
     label:SetTextScale(TEXT_SCALE)
     label:SetText(zone.name)
@@ -242,7 +243,7 @@ function RaceTimes.UI.Init()
     local frame = RaceTimesFrame  -- from XML
     frame:Hide()
 
-    -- Allow ourselves to be cleanly closed via CloseAllWindows()
+    -- Allow ourselves to be cleanly closed via CloseAllWindows().
     tinsert(UISpecialFrames, "RaceTimesFrame")
 
     local type_select = frame.type_select
@@ -267,14 +268,42 @@ function RaceTimes.UI.Init()
     end
 
     frame.time_labels = {}
+    frame.zone_anchors = {}
     frame.yofs = 0
-    RaceTimes.Data.EnumerateZones(
-        function(zone,map_id) AddZone(frame,zone,map_id) end)
+    RaceTimes.Data.EnumerateZones(function(zone) AddZone(frame,zone) end)
     frame.scroll.content:SetSize(frame.scroll:GetWidth(), -(frame.yofs)+10)
 
     RaceTimes_ChangeType(RaceTimes.Type.NORMAL)
 end
 
+-- Helper for Open().
+local function ScrollToCurrentMap()
+    local map_id = C_Map.GetBestMapForUnit("player")
+    -- The top-level ("Cosmic") map has a parent ID of 0, but we play
+    -- it safe and check for nil as well.
+    while map_id and map_id > 0 do
+        local yofs = RaceTimesFrame.zone_anchors[map_id]
+        if yofs then
+            RaceTimesFrame.scroll:SetVerticalScroll(yofs)
+            break
+        end
+        local info = C_Map.GetMapInfo(map_id)
+        map_id = info and info.parentMapID
+    end
+end
+
 function RaceTimes.UI.Open()
     RaceTimesFrame:Show()
+
+    -- Scroll to the user's current zone if it has any races.
+    -- If this is the first time the frame has been opened since login or
+    -- /reload, delay until the next game frame to work around a bug in
+    -- ScrollFrame causing the content and scroll handle to not be set
+    -- properly.  (FIXME: see whether the newer options-window style of
+    -- scroll frame also has this bug)
+    if RaceTimesFrame.scroll:GetVerticalScrollRange() == 0 then
+        C_Timer.After(0, ScrollToCurrentMap)
+    else
+        ScrollToCurrentMap()
+    end
 end
