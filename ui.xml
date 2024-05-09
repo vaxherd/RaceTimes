@@ -80,9 +80,6 @@
       <OnShow>
         RaceTimes_LoadData(self)
       </OnShow>
-      <OnKeyDown>
-        if key == "ESCAPE" then self:Hide() end
-      </OnKeyDown>
     </Scripts>
   </Frame>
 
