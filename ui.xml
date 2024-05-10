@@ -1,10 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
-  <Button name="RaceTimesTypeButtonTemplate" inherits="UIPanelButtonNoTooltipTemplate" virtual="true">
+  <Button name="RaceTimesCategoryButtonTemplate" inherits="UIPanelButtonNoTooltipTemplate" virtual="true">
     <Size x="100" y="21"/>
     <Scripts>
       <OnClick>
-        RaceTimes_ChangeType(self:GetID())
+        RaceTimes_ChangeCategory(self:GetID())
       </OnClick>
     </Scripts>
   </Button>
@@ -56,7 +56,7 @@
         </Scripts>
       </Frame>
 
-      <Frame parentKey="type_select">
+      <Frame parentKey="category_select">
         <Anchors>
           <Anchor point="TOPLEFT" x="10" y="-27"/>
           <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-10" y="-84"/>

@@ -3,8 +3,8 @@ RaceTimes.Data = {}
 
 local class = RaceTimes.class
 
--- Type constants for race types.
-RaceTimes.Type = {
+-- Category constants for race categories.
+RaceTimes.Category = {
     NORMAL    = 1,  -- Normal race (always available)
     ADVANCED  = 2,  -- Advanced race
     REVERSE   = 3,  -- Reverse race
@@ -34,14 +34,14 @@ function Race:__constructor(name, waypoint, times_aura, instances)
     self.instances = instances
 end
 
--- Returns the recorded best time for the given race and type, in milliseconds,
--- and the time rank (1 = gold, 2 = silver, 3 = bronze).
+-- Returns the recorded best time for the given race and category, in
+-- milliseconds, and the time rank (1 = gold, 2 = silver, 3 = bronze).
 -- Returns time 0 and rank 0 if no time has been recorded for the given
--- race and type.
--- Returns nil if the type is not available for that race (such as Reverse
--- for the free-order races).
-function Race:GetTime(type)
-    local instance = self.instances[type]
+-- race and category.
+-- Returns nil if the category is not available for that race (such as
+-- Reverse for the free-order races).
+function Race:GetTime(category)
+    local instance = self.instances[category]
     if not instance then return nil end
     local currency = instance.currency
     local time = C_CurrencyInfo.GetCurrencyInfo(currency).quantity
@@ -58,12 +58,13 @@ function Zone:__constructor(name, map_id, race_list)
     self.map_id = map_id
     self.races = {}
     for _, race_data in ipairs(race_list) do
-        local map_x, map_y, times_aura, race_name, type_list = unpack(race_data)
+        local map_x, map_y, times_aura, race_name, category_list =
+            unpack(race_data)
         local waypoint =
             UiMapPoint.CreateFromCoordinates(map_id, map_x/100, map_y/100)
         local instances = {}
-        for type, data in pairs(type_list) do
-            instances[RaceTimes.Type[type]] = RaceInstance(unpack(data))
+        for category, data in pairs(category_list) do
+            instances[RaceTimes.Category[category]] = RaceInstance(unpack(data))
         end
         tinsert(self.races, Race(race_name, waypoint, times_aura, instances))
     end

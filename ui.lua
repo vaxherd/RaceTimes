@@ -11,23 +11,23 @@ local COLOR_SILVER = {0.9, 0.9, 0.97}
 local COLOR_GOLD = {1.0, 0.75, 0.2}
 local RANK_COLORS = {COLOR_GREY, COLOR_GOLD, COLOR_SILVER, COLOR_BRONZE}
 
-local TYPE_NAMES = {
-    [RaceTimes.Type.NORMAL]    = "Normal",
-    [RaceTimes.Type.ADVANCED]  = "Advanced",
-    [RaceTimes.Type.REVERSE]   = "Reverse",
-    [RaceTimes.Type.CHALLENGE] = "Challenge",
-    [RaceTimes.Type.REV_CHALL] = "R-Challenge",
-    [RaceTimes.Type.STORM]     = "Storm",
+local CATEGORY_NAMES = {
+    [RaceTimes.Category.NORMAL]    = "Normal",
+    [RaceTimes.Category.ADVANCED]  = "Advanced",
+    [RaceTimes.Category.REVERSE]   = "Reverse",
+    [RaceTimes.Category.CHALLENGE] = "Challenge",
+    [RaceTimes.Category.REV_CHALL] = "R-Challenge",
+    [RaceTimes.Category.STORM]     = "Storm",
 }
 
 local BUTTON_LAYOUT = {
-    {type = RaceTimes.Type.NORMAL,    x = -1, y = 0},
-    {type = RaceTimes.Type.ADVANCED,  x =  0, y = 0},
-    {type = RaceTimes.Type.CHALLENGE, x =  1, y = 0},
+    {category = RaceTimes.Category.NORMAL,    x = -1, y = 0},
+    {category = RaceTimes.Category.ADVANCED,  x =  0, y = 0},
+    {category = RaceTimes.Category.CHALLENGE, x =  1, y = 0},
 
-    {type = RaceTimes.Type.STORM,     x = -1, y = 1},
-    {type = RaceTimes.Type.REVERSE,   x =  0, y = 1},
-    {type = RaceTimes.Type.REV_CHALL, x =  1, y = 1},
+    {category = RaceTimes.Category.STORM,     x = -1, y = 1},
+    {category = RaceTimes.Category.REVERSE,   x =  0, y = 1},
+    {category = RaceTimes.Category.REV_CHALL, x =  1, y = 1},
 }
 
 ------------------------------------------------------------------------
@@ -128,7 +128,7 @@ function TimeLabel:OnLeave()
 end
 
 function TimeLabel:UpdateTooltip()
-    local instance = self.race.instances[RaceTimes.UI.active_type]
+    local instance = self.race.instances[RaceTimes.UI.active_category]
     if not instance then
         return false
     end
@@ -190,29 +190,29 @@ end
 
 ------------------------------------------------------------------------
 
-local TypeButton = class()
+local CategoryButton = class()
 
-function TypeButton:__constructor(parent, type)
-    local f = CreateFrame("Button", nil, parent, "RaceTimesTypeButtonTemplate")
+function CategoryButton:__constructor(parent, category)
+    local f = CreateFrame("Button", nil, parent, "RaceTimesCategoryButtonTemplate")
     self.frame = f
-    f:SetID(type)
-    f.Text:SetText(TYPE_NAMES[type])
+    f:SetID(category)
+    f.Text:SetText(CATEGORY_NAMES[category])
 end
 
-function TypeButton:SetSinglePoint(arg1, arg2, ...)
+function CategoryButton:SetSinglePoint(arg1, arg2, ...)
     local f = self.frame
-    if type(arg2) == "table" then  -- assumed to be another TypeButton
+    if type(arg2) == "table" then  -- assumed to be another CategoryButton
         arg2 = arg2.frame
     end
     f:ClearAllPoints()
     f:SetPoint(arg1, arg2, ...)
 end
 
-function TypeButton:GetID()
+function CategoryButton:GetID()
     return self.frame:GetID()
 end
 
-function TypeButton:SetCurrent(current)
+function CategoryButton:SetCurrent(current)
     local color = current and HIGHLIGHT_FONT_COLOR or NORMAL_FONT_COLOR
     self.frame.Text:SetTextColor(color:GetRGB())
 end
@@ -255,19 +255,19 @@ end
 function RaceTimes_LoadData(frame)  -- referenced by XML
     local time_labels = frame.time_labels
     if not time_labels then return end  -- when called from XML load
-    local type = RaceTimes.UI.active_type
+    local category = RaceTimes.UI.active_category
     for _, zone, race in RaceTimes.Data.EnumerateRaces() do
         local label = time_labels[RaceTag(zone.name, race.name)]
-        local time, rank = race:GetTime(type)
+        local time, rank = race:GetTime(category)
         label:SetTime(time, rank)
     end
 end
 
-function RaceTimes_ChangeType(type)  -- referenced by XML
-    RaceTimes.UI.active_type = type
+function RaceTimes_ChangeCategory(category)  -- referenced by XML
+    RaceTimes.UI.active_category = category
     local frame = RaceTimesFrame
     for _, button in ipairs(frame.buttons) do
-        button:SetCurrent(button:GetID() == type)
+        button:SetCurrent(button:GetID() == category)
     end
     if frame:IsShown() then
         RaceTimes_LoadData(frame)
@@ -283,11 +283,11 @@ function RaceTimes.UI.Init()
     -- Allow ourselves to be cleanly closed via CloseAllWindows().
     tinsert(UISpecialFrames, "RaceTimesFrame")
 
-    local type_select = frame.type_select
+    local category_select = frame.category_select
     frame.buttons = {}
     local layout = {}
     for _, button_setup in ipairs(BUTTON_LAYOUT) do
-        local button = TypeButton(type_select, button_setup.type)
+        local button = CategoryButton(category_select, button_setup.category)
         tinsert(frame.buttons, button)
         layout[button_setup.y] = layout[button_setup.y] or {}
         layout[button_setup.y][button_setup.x] = button
@@ -312,7 +312,7 @@ function RaceTimes.UI.Init()
     end
     frame.scroll.content:SetSize(frame.scroll:GetWidth(), -(frame.yofs)+10)
 
-    RaceTimes_ChangeType(RaceTimes.Type.NORMAL)
+    RaceTimes_ChangeCategory(RaceTimes.Category.NORMAL)
 end
 
 -- Helper for Open().
