@@ -224,6 +224,8 @@ local function RaceTag(zone, race)
 end
 
 local function AddRace(frame, zone, race)
+    frame.race_anchors[RaceTag(zone.name, race.name)] = -(frame.yofs)
+
     local f = frame.scroll.content
 
     local time_label = TimeLabel(f, race)
@@ -276,6 +278,80 @@ function RaceTimes_ChangeCategory(category)  -- referenced by XML
 
 ------------------------------------------------------------------------
 
+local SPELLID_RaceStarting = 409799
+
+local active_race = nil
+local active_race_label = nil
+local active_race_start = nil
+local active_race_gold = nil
+local active_race_silver = nil
+
+local function ActiveRaceTimer_OnUpdate()
+    assert(active_race)
+    if not active_race_start then
+        for i = 1, 40 do
+            local data = C_UnitAuras.GetBuffDataByIndex("player", i)
+            if not data then break end
+            if data.spellId == SPELLID_RaceStarting then
+                return  -- Race hasn't started yet
+            end
+        end
+        -- "Race Starting" buff is gone, so race has started
+        active_race_start = GetTime()
+    end
+    local msec = math.floor((GetTime() - active_race_start) * 1000 + 0.5)
+    active_race_label:SetTime(msec, (msec < active_race_gold and 1 or
+                                     msec < active_race_silver and 2 or 3))
+end
+
+local function ActiveRaceTimer_OnEvent(event, ...)
+    if event == "UNIT_QUEST_LOG_CHANGED" then
+        local new_zone, new_race, new_category, new_instance
+        for _, zone, race in RaceTimes.Data.EnumerateRaces() do
+            for category, instance in pairs(race.instances) do
+                if C_QuestLog.IsOnQuest(instance.quest) then
+                    new_zone = zone
+                    new_race = race
+                    new_category = category
+                    new_instance = instance
+                    break
+                end
+            end
+            if new_race then break end
+        end
+        if new_race then
+            if RaceTimesFrame:IsShown() and active_race ~= new_race then
+                local tag = RaceTag(new_zone.name, new_race.name)
+                active_race = new_race
+                active_race_label = RaceTimesFrame.time_labels[tag]
+                assert(active_race_label)
+                active_race_start = nil
+                active_race_gold = new_instance.gold
+                active_race_silver = new_instance.silver
+                RaceTimes_ChangeCategory(new_category)
+                local yofs = RaceTimesFrame.race_anchors[tag]
+                yofs = yofs + active_race_label.frame:GetHeight()/2
+                yofs = yofs - RaceTimesFrame.scroll:GetHeight()/2
+                if yofs < 0 then yofs = 0 end
+                RaceTimesFrame.scroll:SetVerticalScroll(yofs)
+                active_race_label:SetTime(0.001, 0)  -- force "0:00.000"
+                RaceTimesFrame:SetScript("OnUpdate", ActiveRaceTimer_OnUpdate)
+            end
+        else
+            active_race = nil
+            active_race_start = nil
+            RaceTimesFrame:SetScript("OnUpdate", nil)
+        end
+    end
+end
+
+local function InitActiveRaceTimer()
+    RaceTimesFrame:RegisterUnitEvent("UNIT_QUEST_LOG_CHANGED", "player")
+    RaceTimesFrame:SetScript("OnEvent", function(self,...) ActiveRaceTimer_OnEvent(...) end)
+end
+
+------------------------------------------------------------------------
+
 function RaceTimes.UI.Init()
     local frame = RaceTimesFrame  -- from XML
     frame:Hide()
@@ -306,6 +382,7 @@ function RaceTimes.UI.Init()
 
     frame.time_labels = {}
     frame.zone_anchors = {}
+    frame.race_anchors = {}
     frame.yofs = 0
     for _, zone in RaceTimes.Data.EnumerateZones() do
         AddZone(frame, zone)
@@ -313,6 +390,8 @@ function RaceTimes.UI.Init()
     frame.scroll.content:SetSize(frame.scroll:GetWidth(), -(frame.yofs)+10)
 
     RaceTimes_ChangeCategory(RaceTimes.Category.NORMAL)
+
+    InitActiveRaceTimer()
 end
 
 -- Helper for Open().
