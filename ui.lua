@@ -214,18 +214,20 @@ local function AddZone(frame, zone)
     label:SetText(zone.name)
     frame.yofs = frame.yofs - 50
 
-    zone:EnumerateRaces(function(race) AddRace(frame,zone,race) end)
+    for _, race in ipairs(zone.races) do
+        AddRace(frame, zone, race)
+    end
 end
 
 function RaceTimes_LoadData(frame)  -- referenced by XML
     local time_labels = frame.time_labels
     if not time_labels then return end  -- when called from XML load
     local type = RaceTimes.UI.active_type
-    RaceTimes.Data.EnumerateRaces(function(zone, race)
+    for _, zone, race in RaceTimes.Data.EnumerateRaces() do
         local label = time_labels[RaceTag(zone.name, race.name)]
         local time, rank = race:GetTime(type)
         label:SetTime(time, rank)
-    end)
+    end
 end
 
 function RaceTimes_ChangeType(type)  -- referenced by XML
@@ -272,7 +274,9 @@ function RaceTimes.UI.Init()
     frame.time_labels = {}
     frame.zone_anchors = {}
     frame.yofs = 0
-    RaceTimes.Data.EnumerateZones(function(zone) AddZone(frame,zone) end)
+    for _, zone in RaceTimes.Data.EnumerateZones() do
+        AddZone(frame, zone)
+    end
     frame.scroll.content:SetSize(frame.scroll:GetWidth(), -(frame.yofs)+10)
 
     RaceTimes_ChangeType(RaceTimes.Type.NORMAL)

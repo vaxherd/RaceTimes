@@ -68,12 +68,6 @@ function Zone:__constructor(name, map_id, race_list)
         tinsert(self.races, Race(race_name, waypoint, times_aura, instances))
     end
 end
--- Calls callback(race) for each race in the zone.
-function Zone:EnumerateRaces(callback)
-    for _, race in ipairs(self.races) do
-        callback(race)
-    end
-end
 
 
 -- Ordered list of all known races, broken down by zone.
@@ -440,22 +434,40 @@ local function GetRace(zone, race)
     return nil
 end
 
-------------------------------------------------------------------------
-
--- Calls callback(zone) for each zone with races.
-function RaceTimes.Data.EnumerateZones(callback)
-    for _, zone in ipairs(ZONES) do
-        callback(zone)
+-- Enumerator for RaceTimes.Data.EnumerateRaces().
+local function AllRacesEnumerator(_, state)
+    if not state then
+        state = {1, 0}
     end
+    local i_zone, i_race = unpack(state)
+    local zone = ZONES[i_zone]
+    if i_race >= #zone.races then
+        i_zone = i_zone + 1
+        zone = ZONES[i_zone]
+        if not zone then
+            return nil, nil
+        end
+        i_race = 0
+    end
+    i_race = i_race + 1
+    return {i_zone,i_race}, zone, zone.races[i_race]
 end
 
--- Calls callback(zone, race) for each race.
-function RaceTimes.Data.EnumerateRaces(callback)
-    for _, zone in ipairs(ZONES) do
-        for _, race in ipairs(zone.races) do
-            callback(zone, race)
-        end
-    end
+------------------------------------------------------------------------
+
+-- Enumerate all zones.  Intended for use as a generic for iterator.
+-- Iteration returns two variables, an iterator and the actual zone object
+-- (like ipairs()).
+function RaceTimes.Data.EnumerateZones()
+    return ipairs(ZONES)
+end
+
+-- Enumerate all races.  Intended for use as a generic for iterator.
+-- Iteration returns three variables: an iterator (like ipairs()), the
+-- zone object, and the race object.
+-- Races for a single zone can be enumerated with ipairs(zone.races).
+function RaceTimes.Data.EnumerateRaces()
+    return AllRacesEnumerator, nil, nil
 end
 
 -- Debugging / data collection convenience function: prints the quest ID,
