@@ -71,9 +71,13 @@ end
 
 local TimeLabel = class()
 
-function TimeLabel:__constructor(parent)
+function TimeLabel:__constructor(parent, race)
+    self.race = race
+
     local f = CreateFrame("Frame", nil, parent)
     self.frame = f
+    f:SetScript("OnEnter", function() self:OnEnter() end)
+    f:SetScript("OnLeave", function() self:OnLeave() end)
 
     local text_label = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     self.text_label = text_label
@@ -107,6 +111,35 @@ function TimeLabel:__constructor(parent)
     text_label:SetWidth(TimeLabel.width)
     ms_label:SetWidth(TimeLabel.ms_width)
     sec_label:SetWidth(TimeLabel.width - TimeLabel.ms_width)
+end
+
+function TimeLabel:OnEnter()
+    if GameTooltip:IsForbidden() then return end
+    GameTooltip:SetOwner(self.frame, "ANCHOR_NONE")
+    GameTooltip:SetPoint("LEFT", self.frame, "RIGHT")
+    if self:UpdateTooltip() then
+        GameTooltip:Show()
+    end
+end
+
+function TimeLabel:OnLeave()
+    if GameTooltip:IsForbidden() then return end
+    GameTooltip:Hide()
+end
+
+function TimeLabel:UpdateTooltip()
+    local instance = self.race.instances[RaceTimes.UI.active_type]
+    if not instance then
+        return false
+    end
+    GameTooltip:ClearLines()
+    local gold_str = ("Gold: %d.%03d sec"):format(
+        math.floor(instance.gold/1000), instance.gold%1000)
+    GameTooltip:AddLine(gold_str, unpack(COLOR_GOLD))
+    local silver_str = ("Silver: %d.%03d sec"):format(
+        math.floor(instance.silver/1000), instance.silver%1000)
+    GameTooltip:AddLine(silver_str, unpack(COLOR_SILVER))
+    return true
 end
 
 function TimeLabel:GetFrame()
@@ -193,7 +226,7 @@ end
 local function AddRace(frame, zone, race)
     local f = frame.scroll.content
 
-    local time_label = TimeLabel(f)
+    local time_label = TimeLabel(f, race)
     frame.time_labels[RaceTag(zone.name, race.name)] = time_label
     time_label:SetSinglePoint("TOPRIGHT", -5, frame.yofs)
 
