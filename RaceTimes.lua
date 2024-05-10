@@ -11,3 +11,7 @@ RaceTimes.startup_frame:SetScript("OnEvent", function(self, event, arg1, ...)
         RaceTimes.UI.Init()
     end
 end)
+
+function RaceTimes.Show()
+    RaceTimes.UI.Open()
+end
