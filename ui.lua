@@ -133,11 +133,13 @@ function TimeLabel:UpdateTooltip()
         return false
     end
     GameTooltip:ClearLines()
-    local gold_str = ("Gold: %d.%03d sec"):format(
-        math.floor(instance.gold/1000), instance.gold%1000)
+    local gold_str = ("Gold: %d:%02d.%03d"):format(
+        math.floor(instance.gold/60000), math.floor(instance.gold/1000)%60,
+        instance.gold%1000)
     GameTooltip:AddLine(gold_str, unpack(COLOR_GOLD))
-    local silver_str = ("Silver: %d.%03d sec"):format(
-        math.floor(instance.silver/1000), instance.silver%1000)
+    local silver_str = ("Silver: %d:%02d.%03d"):format(
+        math.floor(instance.silver/60000), math.floor(instance.silver/1000)%60,
+        instance.silver%1000)
     GameTooltip:AddLine(silver_str, unpack(COLOR_SILVER))
     return true
 end
