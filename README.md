@@ -1,5 +1,5 @@
-RaceTimes - World of Warcraft dragonriding race records viewer
-==============================================================
+RaceTimes - World of Warcraft skyriding race records viewer
+===========================================================
 
 Author: vaxherd  
 Source: https://github.com/vaxherd/RaceTimes  
@@ -10,7 +10,7 @@ Overview
 --------
 RaceTimes is a simple World of Warcraft addon which provides a dialog
 window listing the player's best recorded time in each of the game's
-dragonriding races.  The window also includes map links for each race,
+skyriding races.  The window also includes map links for each race,
 making it easier to locate a particular race.
 
 

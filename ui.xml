@@ -47,7 +47,7 @@
 
       <Frame parentKey="header" inherits="DialogHeaderTemplate">
         <KeyValues>
-          <KeyValue key="textString" value="Dragonriding Race Times"/>
+          <KeyValue key="textString" value="Skyriding Race Times"/>
         </KeyValues>
         <Scripts>
           <OnShow>

@@ -1,7 +1,7 @@
 local module_name
 module_name, RaceTimes = ...
 
-RaceTimes.VERSION = "0.0+"
+RaceTimes.VERSION = "0.3"
 
 RaceTimes.startup_frame = CreateFrame("Frame")
 RaceTimes.startup_frame:RegisterEvent("ADDON_LOADED")
