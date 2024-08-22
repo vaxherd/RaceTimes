@@ -49,7 +49,7 @@ function RaceLabel:__constructor(parent, race)
     label:SetPoint("LEFT", icon, "RIGHT", 2, 0)
     label:SetTextColor(0.8, 0.8, 0.8)
     label:SetTextScale(TEXT_SCALE)
-    label:SetText(race.name)
+    label:SetText(race:GetLocalizedName())
 
     f:SetHeight(label:GetStringHeight())
     f:SetScript("OnClick", function(_,...) self:OnClick(...) end)
@@ -248,7 +248,7 @@ local function AddZone(frame, zone)
         nil, "ARTWORK", "GameFontHighlightLarge")
     label:SetPoint("TOPLEFT", 10, frame.yofs-20)
     label:SetTextScale(TEXT_SCALE)
-    label:SetText(zone.name)
+    label:SetText(zone:GetLocalizedName())
     frame.yofs = frame.yofs - 50
 
     for _, race in ipairs(zone.races) do

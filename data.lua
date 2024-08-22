@@ -2,6 +2,8 @@ local _, RaceTimes = ...
 RaceTimes.Data = {}
 
 local class = RaceTimes.class
+local strlen = string.len
+local strsub = string.sub
 
 -- Category constants for race categories.
 RaceTimes.Category = {
@@ -32,6 +34,22 @@ function Race:__constructor(name, waypoint, times_aura, instances)
     self.waypoint = waypoint
     self.times_aura = times_aura
     self.instances = instances
+end
+
+-- Returns the localized name of the race as extracted from the race times
+-- aura name, if possible; otherwise returns the default name passed to the
+-- constructor.
+function Race:GetLocalizedName()
+    local function strip_prefix(s, prefix)
+        local prefixlen = strlen(prefix)
+        if strsub(s, 1, prefixlen) == prefix then
+            return strsub(s, prefixlen+1)
+        end
+        return nil
+    end
+    local aura_name = C_Spell.GetSpellName(self.times_aura)
+    return (strip_prefix(aura_name, "Race Times: ")
+         or self.name)
 end
 
 -- Returns the recorded best time for the given race and category, in
@@ -68,6 +86,13 @@ function Zone:__constructor(name, map_id, race_list)
         end
         tinsert(self.races, Race(race_name, waypoint, times_aura, instances))
     end
+end
+
+-- Returns the localized name of the zone, if possible; otherwise returns
+-- the default name passed to the constructor.
+function Zone:GetLocalizedName()
+    local info = C_Map.GetMapInfo(self.map_id)
+    return ((info and info.name) or self.name)
 end
 
 
@@ -367,7 +392,7 @@ local ZONES = {
                                  REV_CHALL = {77845, 2695, 97, 100}}},
     }),
 
-    Zone("Northrend Cup", 113, {
+    Zone("Northrend", 113, {
          {72.69, 85.34, 432043, "Scalawag Slither",
                                 {NORMAL    = {78301, 2720, 73, 78},
                                  ADVANCED  = {78302, 2738, 68, 71},
@@ -387,7 +412,7 @@ local ZONES = {
          {65.63, 37.83, 432046, "Zul'Drak Zephyr",
                                 {NORMAL    = {78346, 2723, 65, 70},
                                  ADVANCED  = {78347, 2741, 62, 65},
-                                 REVERSE   = {78349, 2759, 67, 70}}},  -- 7834"9" is not a typo!
+                                 REVERSE   = {78349, 2759, 67, 70}}},  -- 7834"9" is not a typo!  78348 apparently got skipped.
          {59.79, 15.53, 432047, "Makers' Marathon",
                                 {NORMAL    = {78389, 2724, 100, 105},
                                  ADVANCED  = {78390, 2742, 93, 96},
