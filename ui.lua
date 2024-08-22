@@ -280,7 +280,10 @@ function RaceTimes_ChangeCategory(category)  -- referenced by XML
 
 ------------------------------------------------------------------------
 
-local SPELLID_RaceStarting = 409799
+local SPELLNAME_RaceStarting = {
+    ["Race Starting"] = true,
+    -- Add more languages here
+}
 
 local active_race = nil
 local active_race_label = nil
@@ -290,15 +293,19 @@ local active_race_silver = nil
 
 local function ActiveRaceTimer_OnUpdate()
     assert(active_race)
-    if not active_race_start then
-        for i = 1, 40 do
-            local data = C_UnitAuras.GetBuffDataByIndex("player", i)
-            if not data then break end
-            if data.spellId == SPELLID_RaceStarting then
-                return  -- Race hasn't started yet
-            end
+    for i = 1, 40 do
+        local data = C_UnitAuras.GetBuffDataByIndex("player", i)
+        if not data then break end
+        if SPELLNAME_RaceStarting[data.name] then
+            -- Race hasn't started yet.  Reset state in case we're
+            -- restarting with the Bronze Timepiece.
+            active_race_start = nil
+            active_race_label:SetTime(0.001, 0)
+            return
         end
-        -- "Race Starting" buff is gone, so race has started
+    end
+    -- "Race Starting" buff is gone, so race has started.
+    if not active_race_start then
         active_race_start = GetTime()
     end
     local msec = math.floor((GetTime() - active_race_start) * 1000 + 0.5)
@@ -343,6 +350,7 @@ local function ActiveRaceTimer_OnEvent(event, ...)
             active_race = nil
             active_race_start = nil
             RaceTimesFrame:SetScript("OnUpdate", nil)
+            RaceTimes_LoadData(RaceTimesFrame)
         end
     end
 end
