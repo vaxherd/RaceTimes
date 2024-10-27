@@ -1,6 +1,8 @@
 local _, RaceTimes = ...
 
 local class = RaceTimes.class
+local Button = RaceTimes.Button
+local Frame = RaceTimes.Frame
 
 RaceTimes.UI = {}
 
@@ -32,31 +34,28 @@ local BUTTON_LAYOUT = {
 
 ------------------------------------------------------------------------
 
-local RaceLabel = class()
+local RaceLabel = class(Button)
+
+function RaceLabel:__allocator(parent, race)
+    return Button.__allocator("Button", nil, parent)
+end
 
 function RaceLabel:__constructor(parent, race)
     self.race = race
 
-    local f = CreateFrame("Button", nil, parent)
-    self.frame = f
-
-    local icon = f:CreateTexture(nil, "ARTWORK")
+    local icon = self:CreateTexture(nil, "ARTWORK")
     icon:SetPoint("LEFT")
     icon:SetSize(13, 13)
     icon:SetAtlas("Waypoint-MapPin-ChatIcon")
 
-    local label = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    local label = self:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     label:SetPoint("LEFT", icon, "RIGHT", 2, 0)
     label:SetTextColor(0.8, 0.8, 0.8)
     label:SetTextScale(TEXT_SCALE)
     label:SetText(race:GetLocalizedName())
 
-    f:SetHeight(label:GetStringHeight())
-    f:SetScript("OnClick", function(_,...) self:OnClick(...) end)
-end
-
-function RaceLabel:SetPoint(...)
-    self.frame:SetPoint(...)
+    self:SetHeight(label:GetStringHeight())
+    self:SetScript("OnClick", self.OnClick)
 end
 
 function RaceLabel:OnClick(button, down)
@@ -69,30 +68,32 @@ end
 
 ------------------------------------------------------------------------
 
-local TimeLabel = class()
+local TimeLabel = class(Frame)
+
+function TimeLabel:__allocator(parent, race)
+    return Frame.__allocator("Frame", nil, parent)
+end
 
 function TimeLabel:__constructor(parent, race)
     self.race = race
 
-    local f = CreateFrame("Frame", nil, parent)
-    self.frame = f
-    f:SetScript("OnEnter", function() self:OnEnter() end)
-    f:SetScript("OnLeave", function() self:OnLeave() end)
+    self:SetScript("OnEnter", self.OnEnter)
+    self:SetScript("OnLeave", self.OnLeave)
 
-    local text_label = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    local text_label = self:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     self.text_label = text_label
     text_label:SetPoint("RIGHT")
     text_label:SetTextScale(TEXT_SCALE)
     text_label:SetJustifyH("CENTER")
 
-    local ms_label = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    local ms_label = self:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     self.ms_label = ms_label
     ms_label:SetPoint("RIGHT")
     ms_label:SetTextScale(TEXT_SCALE)
     ms_label:SetJustifyH("LEFT")
     ms_label:Hide()
 
-    local sec_label = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    local sec_label = self:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     self.sec_label = sec_label
     sec_label:SetPoint("RIGHT", ms_label, "LEFT")
     sec_label:SetTextScale(TEXT_SCALE)
@@ -107,7 +108,7 @@ function TimeLabel:__constructor(parent, race)
         TimeLabel.ms_width = text_label:GetStringWidth() + 2
         text_label:SetText("")
     end
-    f:SetSize(TimeLabel.width, TimeLabel.height)
+    self:SetSize(TimeLabel.width, TimeLabel.height)
     text_label:SetWidth(TimeLabel.width)
     ms_label:SetWidth(TimeLabel.ms_width)
     sec_label:SetWidth(TimeLabel.width - TimeLabel.ms_width)
@@ -115,8 +116,8 @@ end
 
 function TimeLabel:OnEnter()
     if GameTooltip:IsForbidden() then return end
-    GameTooltip:SetOwner(self.frame, "ANCHOR_NONE")
-    GameTooltip:SetPoint("LEFT", self.frame, "RIGHT")
+    GameTooltip:SetOwner(self, "ANCHOR_NONE")
+    GameTooltip:SetPoint("LEFT", self, "RIGHT")
     if self:UpdateTooltip() then
         GameTooltip:Show()
     end
@@ -144,14 +145,9 @@ function TimeLabel:UpdateTooltip()
     return true
 end
 
-function TimeLabel:GetFrame()
-    return self.frame
-end
-
 function TimeLabel:SetSinglePoint(...)
-    local f = self.frame
-    f:ClearAllPoints()
-    f:SetPoint(...)
+    self:ClearAllPoints()
+    self:SetPoint(...)
 end
 
 -- Expects values returned from Race:GetTime().
@@ -192,31 +188,26 @@ end
 
 ------------------------------------------------------------------------
 
-local CategoryButton = class()
+local CategoryButton = class(Button)
+
+function CategoryButton:__allocator(parent, category)
+    return Button.__allocator("Button", nil, parent,
+                              "RaceTimesCategoryButtonTemplate")
+end
 
 function CategoryButton:__constructor(parent, category)
-    local f = CreateFrame("Button", nil, parent, "RaceTimesCategoryButtonTemplate")
-    self.frame = f
-    f:SetID(category)
-    f.Text:SetText(CATEGORY_NAMES[category])
+    self:SetID(category)
+    self.Text:SetText(CATEGORY_NAMES[category])
 end
 
-function CategoryButton:SetSinglePoint(arg1, arg2, ...)
-    local f = self.frame
-    if type(arg2) == "table" then  -- assumed to be another CategoryButton
-        arg2 = arg2.frame
-    end
-    f:ClearAllPoints()
-    f:SetPoint(arg1, arg2, ...)
-end
-
-function CategoryButton:GetID()
-    return self.frame:GetID()
+function CategoryButton:SetSinglePoint(...)
+    self:ClearAllPoints()
+    self:SetPoint(...)
 end
 
 function CategoryButton:SetCurrent(current)
     local color = current and HIGHLIGHT_FONT_COLOR or NORMAL_FONT_COLOR
-    self.frame.Text:SetTextColor(color:GetRGB())
+    self.Text:SetTextColor(color:GetRGB())
 end
 
 ------------------------------------------------------------------------
@@ -236,7 +227,7 @@ local function AddRace(frame, zone, race)
 
     local race_label = RaceLabel(f, race)
     race_label:SetPoint("TOPLEFT", 30, frame.yofs)
-    race_label:SetPoint("TOPRIGHT", time_label:GetFrame(), "TOPLEFT", -5, 0)
+    race_label:SetPoint("TOPRIGHT", time_label, "TOPLEFT", -5, 0)
 
     frame.yofs = frame.yofs - 25
 end
@@ -339,7 +330,7 @@ local function ActiveRaceTimer_OnEvent(event, ...)
                 active_race_silver = new_instance.silver
                 RaceTimes_ChangeCategory(new_category)
                 local yofs = RaceTimesFrame.race_anchors[tag]
-                yofs = yofs + active_race_label.frame:GetHeight()/2
+                yofs = yofs + active_race_label:GetHeight()/2
                 yofs = yofs - RaceTimesFrame.scroll:GetHeight()/2
                 if yofs < 0 then yofs = 0 end
                 RaceTimesFrame.scroll:SetVerticalScroll(yofs)
