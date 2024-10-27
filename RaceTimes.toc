@@ -5,6 +5,7 @@
 
 RaceTimes.lua
 _class.lua
+_frame.lua
 data.lua
 slashcmd.lua
 ui.lua
