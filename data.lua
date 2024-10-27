@@ -49,6 +49,7 @@ function Race:GetLocalizedName()
     end
     local aura_name = C_Spell.GetSpellName(self.times_aura)
     return (strip_prefix(aura_name, "Race Times: ")
+         or strip_prefix(aura_name, "Temps des courses\194\160: ")
          or self.name)
 end
 
