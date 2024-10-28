@@ -10,20 +10,26 @@ end
 
 -- Frame header
 L["Skyriding Race Times"] = {
+    frFR = "Temps des Courses draconiques",
 }
 
 -- Category buttons
 L["Normal"] = {
+    frFR = "Normal",
 }
 L["Advanced"] = {
+    frFR = "Avancé",
 }
 L["Challenge"] = {
+    frFR = "Défi",
 }
 L["Storm"] = {  -- For the Storm Gryphon tutorial races in the Dragon Isles.
 }
 L["Reverse"] = {
+    frFR = "Inversé",
 }
 L["R-Challenge"] = {  -- Abbreviation for "reverse challenge".
+    frFR = "Défi inversé",
 }
 
 -- Time format for seconds (arguments: minutes, seconds)
@@ -36,8 +42,10 @@ L[".%03d"] = {
 -- Tooltip gold/silver time headers.  A space is inserted between this
 -- text and the relevant time.
 L["Gold:"] = {
+    frFR = "Or\194\160:",
 }
 L["Silver:"] = {
+    frFR = "Argent\194\160:",
 }
 
 -- "Race Starting" aura name (spell 439233 etc, used to detect race start).

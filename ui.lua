@@ -402,6 +402,7 @@ function RaceTimes.UI.Init()
     frame:Hide()
     frame:SetFrameLevel(frame:GetParent():GetFrameLevel()+5)
     frame.header.Text:SetText(_L("Skyriding Race Times"))
+    frame.header:SetWidth(frame.header.Text:GetUnboundedStringWidth() + 25)
 
     -- Allow ourselves to be cleanly closed via CloseAllWindows().
     tinsert(UISpecialFrames, "RaceTimesFrame")
