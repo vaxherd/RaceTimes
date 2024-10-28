@@ -36,6 +36,8 @@ local BUTTON_LAYOUT = {
 
 local RaceLabel = class(Button)
 
+local RACE_BUTTON_MARGIN = 2
+
 function RaceLabel:__allocator(parent, race)
     return Button.__allocator("Button", nil, parent)
 end
@@ -44,18 +46,22 @@ function RaceLabel:__constructor(parent, race)
     self.race = race
 
     local icon = self:CreateTexture(nil, "ARTWORK")
+    self.icon = icon
     icon:SetPoint("LEFT")
     icon:SetSize(13, 13)
     icon:SetAtlas("Waypoint-MapPin-ChatIcon")
 
     local label = self:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    label:SetPoint("LEFT", icon, "RIGHT", 2, 0)
+    self.label = label
+    label:SetPoint("LEFT", icon, "RIGHT", RACE_BUTTON_MARGIN, 0)
+    label:SetJustifyH("LEFT")
     label:SetTextColor(0.8, 0.8, 0.8)
     label:SetTextScale(TEXT_SCALE)
     label:SetText(race:GetLocalizedName())
 
     self:SetHeight(label:GetStringHeight())
     self:SetScript("OnClick", self.OnClick)
+    self:SetScript("OnSizeChanged", self.OnSizeChanged)
 end
 
 function RaceLabel:OnClick(button, down)
@@ -64,6 +70,39 @@ function RaceLabel:OnClick(button, down)
         WorldMapFrame:SetMapID(self.race.waypoint.uiMapID)
     end
     C_Map.SetUserWaypoint(self.race.waypoint)
+end
+
+function RaceLabel:OnSizeChanged(width, height)
+    local label = self.label
+    local label_width = self:GetWidth() - (self.icon:GetWidth() + RACE_BUTTON_MARGIN)
+    label:SetWidth(0)
+    label:SetTextScale(TEXT_SCALE)
+    local text_width = label:GetUnboundedStringWidth()
+    if text_width > label_width then
+        local scale = label_width / text_width
+        -- Simply changing the text scale value doesn't always give us
+        -- the expected size result (probably due to font rendering
+        -- details like pixel alignment and kerning), so we keep trying
+        -- until we actually fit within the desired space.
+        local prev = text_width
+        label:SetTextScale(TEXT_SCALE * scale)
+        text_width = label:GetUnboundedStringWidth(text)
+        while text_width > label_width do
+            local change = text_width / prev
+            -- Avoid getting stuck doing tiny increments over and over.
+            if change > 0.97 then change = 0.97 end
+            scale = scale * change
+            if scale <= 0.8 then
+                label:SetTextScale(TEXT_SCALE * 0.8)
+                -- Enable line wrapping if needed.
+                label:SetWidth(label_width)
+                break
+            end
+            prev = text_width
+            label:SetTextScale(TEXT_SCALE * scale)
+            text_width = label:GetUnboundedStringWidth(text)
+        end
+    end
 end
 
 ------------------------------------------------------------------------
@@ -374,9 +413,9 @@ function RaceTimes.UI.Init()
             if x == 0 then
                 button:SetSinglePoint("CENTER", 0, 13 - 26*y)
             elseif x < 0 then
-                button:SetSinglePoint("RIGHT", layout[y][0], "LEFT", -8, 0)
+                button:SetSinglePoint("RIGHT", layout[y][0], "LEFT", -10, 0)
             else  -- x > 0
-                button:SetSinglePoint("LEFT", layout[y][0], "RIGHT", 8, 0)
+                button:SetSinglePoint("LEFT", layout[y][0], "RIGHT", 10, 0)
             end
         end
     end
