@@ -4,6 +4,8 @@
 ## Version: 1.0
 
 RaceTimes.lua
+l10n.lua
+
 _class.lua
 _frame.lua
 data.lua

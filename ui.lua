@@ -1,10 +1,13 @@
 local _, RaceTimes = ...
+RaceTimes.UI = {}
 
+local _L = RaceTimes._L
 local class = RaceTimes.class
 local Button = RaceTimes.Button
 local Frame = RaceTimes.Frame
 
-RaceTimes.UI = {}
+local floor = math.floor
+
 
 local TEXT_SCALE = 1.2
 local COLOR_GREY = {0.5, 0.5, 0.5}
@@ -14,12 +17,12 @@ local COLOR_GOLD = {1.0, 0.75, 0.2}
 local RANK_COLORS = {COLOR_GREY, COLOR_GOLD, COLOR_SILVER, COLOR_BRONZE}
 
 local CATEGORY_NAMES = {
-    [RaceTimes.Category.NORMAL]    = "Normal",
-    [RaceTimes.Category.ADVANCED]  = "Advanced",
-    [RaceTimes.Category.REVERSE]   = "Reverse",
-    [RaceTimes.Category.CHALLENGE] = "Challenge",
-    [RaceTimes.Category.REV_CHALL] = "R-Challenge",
-    [RaceTimes.Category.STORM]     = "Storm",
+    [RaceTimes.Category.NORMAL]    = _L("Normal"),
+    [RaceTimes.Category.ADVANCED]  = _L("Advanced"),
+    [RaceTimes.Category.REVERSE]   = _L("Reverse"),
+    [RaceTimes.Category.CHALLENGE] = _L("Challenge"),
+    [RaceTimes.Category.REV_CHALL] = _L("R-Challenge"),
+    [RaceTimes.Category.STORM]     = _L("Storm"),
 }
 
 local BUTTON_LAYOUT = {
@@ -109,6 +112,16 @@ end
 
 local TimeLabel = class(Frame)
 
+-- Accepts a time in milliseconds and returns two values:
+-- minutes_seconds_string, milliseconds_string
+local function FormatTime(time)
+    local ms = time % 1000
+    local sec = floor(time / 1000) % 60
+    local min = floor(time / (60*1000))
+    return string.format(_L("%d:%02d"), min, sec),
+           string.format(_L(".%03d"), ms)
+end
+
 function TimeLabel:__allocator(parent, race)
     return Frame.__allocator("Frame", nil, parent)
 end
@@ -140,10 +153,11 @@ function TimeLabel:__constructor(parent, race)
     sec_label:Hide()
 
     if not TimeLabel.width then
-        text_label:SetText("00:00.000")
+        local zero_sec, zero_ms = FormatTime(0)
+        text_label:SetText("0"..zero_sec..zero_ms)
         TimeLabel.width = text_label:GetStringWidth() + 4
         TimeLabel.height = text_label:GetStringHeight()
-        text_label:SetText(".000")
+        text_label:SetText(zero_ms)
         TimeLabel.ms_width = text_label:GetStringWidth() + 2
         text_label:SetText("")
     end
@@ -173,13 +187,11 @@ function TimeLabel:UpdateTooltip()
         return false
     end
     GameTooltip:ClearLines()
-    local gold_str = ("Gold: %d:%02d.%03d"):format(
-        math.floor(instance.gold/60000), math.floor(instance.gold/1000)%60,
-        instance.gold%1000)
+    local gold_sec, gold_ms = FormatTime(instance.gold)
+    local gold_str = _L("Gold:").." "..gold_sec..gold_ms
     GameTooltip:AddLine(gold_str, unpack(COLOR_GOLD))
-    local silver_str = ("Silver: %d:%02d.%03d"):format(
-        math.floor(instance.silver/60000), math.floor(instance.silver/1000)%60,
-        instance.silver%1000)
+    local silver_sec, silver_ms = FormatTime(instance.silver)
+    local silver_str = _L("Silver:").." "..silver_sec..silver_ms
     GameTooltip:AddLine(silver_str, unpack(COLOR_SILVER))
     return true
 end
@@ -192,35 +204,33 @@ end
 -- Expects values returned from Race:GetTime().
 function TimeLabel:SetTime(time, rank)
     local text_label = self.text_label
-    local ms_label = self.ms_label
     local sec_label = self.sec_label
+    local ms_label = self.ms_label
 
     if not time then
         text_label:SetTextColor(unpack(COLOR_GREY))
         text_label:SetText("—")
         text_label:Show()
-        ms_label:Hide()
         sec_label:Hide()
+        ms_label:Hide()
 
     elseif time == 0 then
         text_label:SetTextColor(unpack(COLOR_GREY))
         text_label:SetText("(No time)")
         text_label:Show()
-        ms_label:Hide()
         sec_label:Hide()
+        ms_label:Hide()
 
     else
-        local ms = time % 1000
-        local sec = math.floor(time / 1000) % 60
-        local min = math.floor(time / (60*1000))
+        local sec_str, ms_str = FormatTime(time)
         local color = RANK_COLORS[rank+1]
-        ms_label:SetTextColor(unpack(color))
-        ms_label:SetText((".%03d"):format(ms))
         sec_label:SetTextColor(unpack(color))
-        sec_label:SetText(("%d:%02d"):format(min, sec))
+        sec_label:SetText(sec_str)
+        ms_label:SetTextColor(unpack(color))
+        ms_label:SetText(ms_str)
         text_label:Hide()
-        ms_label:Show()
         sec_label:Show()
+        ms_label:Show()
 
     end
 end
@@ -310,11 +320,6 @@ function RaceTimes_ChangeCategory(category)  -- referenced by XML
 
 ------------------------------------------------------------------------
 
-local SPELLNAME_RaceStarting = {
-    ["Race Starting"] = true,
-    -- Add more languages here
-}
-
 local active_race = nil
 local active_race_label = nil
 local active_race_start = nil
@@ -326,7 +331,7 @@ local function ActiveRaceTimer_OnUpdate()
     for i = 1, 40 do
         local data = C_UnitAuras.GetBuffDataByIndex("player", i)
         if not data then break end
-        if SPELLNAME_RaceStarting[data.name] then
+        if data.name == _L("Race Starting") then
             -- Race hasn't started yet.  Reset state in case we're
             -- restarting with the Bronze Timepiece.
             active_race_start = nil
@@ -338,7 +343,7 @@ local function ActiveRaceTimer_OnUpdate()
     if not active_race_start then
         active_race_start = GetTime()
     end
-    local msec = math.floor((GetTime() - active_race_start) * 1000 + 0.5)
+    local msec = floor((GetTime() - active_race_start) * 1000 + 0.5)
     active_race_label:SetTime(msec, (msec < active_race_gold and 1 or
                                      msec < active_race_silver and 2 or 3))
 end
@@ -395,6 +400,8 @@ end
 function RaceTimes.UI.Init()
     local frame = RaceTimesFrame  -- from XML
     frame:Hide()
+    frame:SetFrameLevel(frame:GetParent():GetFrameLevel()+5)
+    frame.header.Text:SetText(_L("Skyriding Race Times"))
 
     -- Allow ourselves to be cleanly closed via CloseAllWindows().
     tinsert(UISpecialFrames, "RaceTimesFrame")

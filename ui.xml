@@ -49,11 +49,6 @@
         <KeyValues>
           <KeyValue key="textString" value="Skyriding Race Times"/>
         </KeyValues>
-        <Scripts>
-          <OnShow>
-            self:SetFrameLevel(self:GetParent():GetFrameLevel()+5)
-          </OnShow>
-        </Scripts>
       </Frame>
 
       <Frame parentKey="category_select">
