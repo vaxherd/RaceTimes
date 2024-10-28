@@ -45,6 +45,17 @@
         </Layers>
       </Frame>
 
+      <Button parentKey="close_button" inherits="UIPanelCloseButton">
+        <Anchors>
+          <Anchor point="TOPRIGHT" x="4" y="4"/>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            HideUIPanel(self:GetParent())
+          </OnClick>
+        </Scripts>
+      </Button>
+
       <Frame parentKey="header" inherits="DialogHeaderTemplate">
         <KeyValues>
           <KeyValue key="textString" value="Skyriding Race Times"/>
