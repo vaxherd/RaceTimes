@@ -80,8 +80,8 @@ Note that __super() is _only_ valid in constructors; instance methods
 must explicitly name the parent class when calling overridden methods.
 
 
-Additionally, classes may provide a class method named "__allocator" which
-creates the initial table for an instance:
+Additionally, classes may provide a class method named "__allocator"
+which creates the initial table for an instance:
 
     MyClass = class()
     MyClass.singleton = {}
@@ -102,10 +102,16 @@ The allocator must return a table value (it is not allowed to fail).
 The method should raise an error under any condition which would prevent
 it from creating a new instance.
 
-If the allocator sets a metatable on the returned instance with an
-"__index" field, the value must be either a function or a table; the
-value will effectively be inserted between the instance table itself and
-the class definition when performing a member lookup.
+Any metatable set on the returned instance will be preserved, except
+that the __index field will be set appropriately for class member lookup
+as is done by the default allocator.  If no metatable is set, a new one
+will be created.
+
+If the allocator sets an instance metatable which includes an __index
+field, the value of that field will replace the normal __index which
+redirects to the class definition.  This will prevent ordinary use of
+the table as a class instance unless special care is taken, and should
+normally not be done.
 
 __super() is not supported in allocators; an overriding allocator wishing
 to call its base class's implementation must explicitly name the base
@@ -354,51 +360,19 @@ local tests = {
         end
         local instance = Class()
         assert(getmetatable(instance).foo == 72)
+        assert(instance.__allocator == Class.__allocator)
     end,
 
-    AllocatorMetatableIndexTable = function()
+    AllocatorMetatableIndex = function()
         local Class = class()
         function Class.__allocator(thisclass)
             assert(thisclass == Class)
-            return setmetatable({}, {__index = {foo = 73}})
+            return setmetatable({}, {
+                __index = {foo = 73, __constructor = function() end}})
         end
         local instance = Class()
         assert(instance.foo == 73)
-    end,
-
-    AllocatorMetatableIndexFunction = function()
-        local Class = class()
-        function Class.__allocator(thisclass)
-            assert(thisclass == Class)
-            return setmetatable({}, {__index = function(t, k)
-                                         return k=="foo" and 74 or nil
-                                     end})
-        end
-        local instance = Class()
-        assert(instance.foo == 74)
-    end,
-
-    AllocatorMetatableIndexTableFalseValue = function()
-        local Class = class()
-        function Class.__allocator(thisclass)
-            assert(thisclass == Class)
-            return setmetatable({}, {__index = {foo = false}})
-        end
-        local instance = Class()
-        assert(instance.foo == false)
-    end,
-
-    AllocatorMetatableIndexFunctionFalseValue = function()
-        local Class = class()
-        function Class.__allocator(thisclass)
-            assert(thisclass == Class)
-            return setmetatable({}, {__index = function(t, k)
-                                         if k=="foo" then return false end
-                                         return nil
-                                     end})
-        end
-        local instance = Class()
-        assert(instance.foo == false)
+        assert(instance.__allocator == nil)
     end,
 
     AllocatorInvalidResult = function()
