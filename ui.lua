@@ -257,6 +257,14 @@ end
 function CategoryButton:SetCurrent(current)
     local color = current and HIGHLIGHT_FONT_COLOR or NORMAL_FONT_COLOR
     self.Text:SetTextColor(color:GetRGB())
+    self:SetButtonState(current and "PUSHED" or "NORMAL", current)
+    -- UIPanelButton implements its own "pushed" texture swapping, so we
+    -- have to call that logic as appropriate.
+    if current then
+        UIPanelButton_OnMouseDown(self)
+    else
+        UIPanelButton_OnMouseUp(self)
+    end
 end
 
 ------------------------------------------------------------------------
@@ -460,6 +468,10 @@ end
 
 function RaceTimes.UI.Open()
     RaceTimesFrame:Show()
+
+    -- Refresh the "pressed" state of all buttons (since it seems to get
+    -- reset whenever the frame is re-opened).
+    RaceTimes_ChangeCategory(RaceTimes.UI.active_category)
 
     -- Scroll to the user's current zone if it has any races.
     -- If this is the first time the frame has been opened since login or
