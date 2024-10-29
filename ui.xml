@@ -70,7 +70,7 @@
         <!-- Buttons are added programmatically -->
       </Frame>
 
-      <ScrollFrame parentKey="scroll" inherits="UIPanelScrollFrameTemplate">
+      <ScrollFrame parentKey="scroll" inherits="ScrollFrameTemplate">
         <Anchors>
           <Anchor point="TOPLEFT" x="10" y="-99"/>
           <Anchor point="BOTTOMRIGHT" x="-32" y="10"/>
