@@ -77,7 +77,8 @@ end
 
 function RaceLabel:OnSizeChanged(width, height)
     local label = self.label
-    local label_width = self:GetWidth() - (self.icon:GetWidth() + RACE_BUTTON_MARGIN)
+    local label_width =
+        self:GetWidth() - (self.icon:GetWidth() + RACE_BUTTON_MARGIN)
     label:SetWidth(0)
     label:SetTextScale(TEXT_SCALE)
     local text_width = label:GetUnboundedStringWidth()
