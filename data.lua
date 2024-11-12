@@ -506,7 +506,7 @@ local ZONES = {
          {59.209,68.939,444156, "Tenir's Traversal",
                                 {NORMAL    = {80257, 2960, 65, 70},
                                  ADVANCED  = {80266, 2966, 60, 63},
-                                 REVERSE   = {80200, 2972, 0, 0}}},
+                                 REVERSE   = {80272, 2972, 63, 66}}},
          {41.423,67.198,444157, "Light's Redoubt Descent",
                                 {NORMAL    = {80258, 2961, 63, 68},
                                  ADVANCED  = {80267, 2967, 62, 65},
