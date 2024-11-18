@@ -376,7 +376,7 @@ local ZONES = {
          {37.177,44.078,426027, "Smoldering Sprint",
                                 {NORMAL    = {77983, 2677, 80, 85},
                                  ADVANCED  = {77984, 2683, 73, 76},
-                                 REVERSE   = {77985, 2698, 73, 76},
+                                 REVERSE   = {77985, 2689, 73, 76},
                                  CHALLENGE = {77986, 2696, 79, 82},
                                  REV_CHALL = {77987, 2697, 80, 83}}},
          {35.156,55.222,426028, "Viridescent Venture",
