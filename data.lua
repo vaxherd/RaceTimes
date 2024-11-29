@@ -303,7 +303,7 @@ local ZONES = {
                                 {NORMAL    = {73029, 2204, 70, 73},
                                  ADVANCED  = {73030, 2210, 68, 73},
                                  REVERSE   = {73032, 2216, 63, 68},
-                                 CHALLENGE = {75960, 2480, 70, 63},
+                                 CHALLENGE = {75960, 2480, 70, 73},
                                  REV_CHALL = {75961, 2481, 68, 71}}},
          {76.190,65.740,415789, "Stormsunder Crater Circuit",
                                 {NORMAL    = {73017, 2201, 43, 46},
