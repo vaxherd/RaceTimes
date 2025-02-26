@@ -13,6 +13,7 @@
 ## Category-ruRU: Другое
 ## Category-zhCN: 其它
 ## Category-zhTW: 其他
+## IconTexture: Interface/AddOns/RaceTimes/textures/icon.png
 
 RaceTimes.lua
 l10n.lua
