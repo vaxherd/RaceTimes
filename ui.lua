@@ -28,10 +28,10 @@ local CATEGORY_NAMES = {
 local BUTTON_LAYOUT = {
     {category = RaceTimes.Category.NORMAL,    x = -1, y = 0},
     {category = RaceTimes.Category.ADVANCED,  x =  0, y = 0},
-    {category = RaceTimes.Category.CHALLENGE, x =  1, y = 0},
+    {category = RaceTimes.Category.REVERSE,   x =  1, y = 0},
 
     {category = RaceTimes.Category.STORM,     x = -1, y = 1},
-    {category = RaceTimes.Category.REVERSE,   x =  0, y = 1},
+    {category = RaceTimes.Category.CHALLENGE, x =  0, y = 1},
     {category = RaceTimes.Category.REV_CHALL, x =  1, y = 1},
 }
 
