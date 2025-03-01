@@ -217,8 +217,8 @@ function ConfigPanel:__constructor()
     self:AddHeader(_L("About RaceTimes"))
     self:AddText(_L("RaceTimes is a simple addon to record and display best times for each skyriding race, optionally across multiple characters.") .. "|n|n" ..
                  _L("The best time list can be opened with the |cFFFFFF00/racetimes|r (or |cFFFFFF00/rt|r) command.") .. "|n|n" ..
-                 _L("Author: ").."vaxherd|n" ..
-                 _L("Version: ")..RaceTimes.VERSION)
+                 _L("Author:").." vaxherd|n" ..
+                 _L("Version:").." "..RaceTimes.VERSION)
 
     f:SetHeight(-self.y + 10)
 end

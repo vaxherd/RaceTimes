@@ -64,3 +64,36 @@ L["Race Starting"] = {
     zhCN = "竞速开始",
     zhTW = "比賽開始",
 }
+
+-- Settings section header for time display options
+L["Time display settings"] = {
+}
+
+-- Checkbox option name and comment text
+L["Show best time across all saved characters"] = {
+}
+L["When unchecked, the best time for the current character is shown."] = {
+}
+
+-- Settings section header and comments for character management
+L["Saved character management"] = {
+}
+L["Unchecking a character causes that character's times to be deleted on the next login or UI reload."] = {
+}
+L["The logged-in character's times are always recorded."] = {
+}
+
+-- Settings section header and text for addon info
+L["About RaceTimes"] = {
+}
+L["RaceTimes is a simple addon to record and display best times for each skyriding race, optionally across multiple characters."] = {
+}
+L["The best time list can be opened with the |cFFFFFF00/racetimes|r (or |cFFFFFF00/rt|r) command."] = {
+}
+
+-- Author and version strings for addon info.  A space is inserted between
+-- each of these strings and the relevant text.
+L["Author:"] = {
+}
+L["Version:"] = {
+}
