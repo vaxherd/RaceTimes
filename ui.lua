@@ -479,8 +479,7 @@ function RaceTimes.UI.Open()
     -- If this is the first time the frame has been opened since login or
     -- /reload, delay until the next game frame to work around a bug in
     -- ScrollFrame causing the content and scroll handle to not be set
-    -- properly.  (FIXME: see whether the newer options-window style of
-    -- scroll frame also has this bug)
+    -- properly.
     if RaceTimesFrame.scroll:GetVerticalScrollRange() == 0 then
         C_Timer.After(0, ScrollToCurrentMap)
     else
