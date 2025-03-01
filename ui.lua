@@ -411,11 +411,11 @@ function RaceTimes.UI.Init()
     local frame = RaceTimesFrame  -- from XML
     frame:Hide()
     frame:SetFrameLevel(frame:GetParent():GetFrameLevel()+5)
-    frame.header.Text:SetText(_L("Skyriding Race Times"))
-    frame.header:SetWidth(frame.header.Text:GetUnboundedStringWidth() + 50)
-
     -- Allow ourselves to be cleanly closed via CloseAllWindows().
     tinsert(UISpecialFrames, "RaceTimesFrame")
+
+    frame.header.Text:SetText(_L("Skyriding Race Times"))
+    frame.header:SetWidth(frame.header.Text:GetUnboundedStringWidth() + 50)
 
     local category_select = frame.category_select
     frame.buttons = {}
@@ -489,4 +489,13 @@ end
 
 function RaceTimes.UI.RefreshTimes()
     RaceTimes_LoadData(RaceTimesFrame)
+end
+
+function RaceTimes.UI.Recenter()
+    local frame = RaceTimesFrame
+    frame:ClearAllPoints()
+    frame:SetPoint("CENTER", 0, 100)
+    -- Fake a drag start/stop to update the saved position.
+    frame:StartMoving()
+    frame:StopMovingOrSizing()
 end

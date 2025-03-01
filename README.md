@@ -46,7 +46,11 @@ every character you've played with the addon loaded by turning on the
 "Show best time across all saved characters" option in the addon's
 settings menu, accessed through the usual in-game options window (go to
 the "AddOns" tab and click "RaceTimes" in the addon list) or with the
-command `/racetimes settings` (or `/rt settings`).
+command `/racetimes settings`.
+
+The race list window can be moved by dragging the title bar.  If the
+window gets dragged to an inconvenient position, it can be reset to the
+center of the screen with the command `/racetimes recenter`.
 
 The race list can also be opened with the macro command
 `/run RaceTimes.Show()`, for integration with custom buttons or other
