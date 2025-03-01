@@ -10,8 +10,12 @@ Overview
 --------
 RaceTimes is a simple World of Warcraft addon which provides a dialog
 window listing the player's best recorded time in each of the game's
-skyriding races.  The window also includes map links for each race,
-making it easier to locate a particular race.
+skyriding races.  The window includes map links for each race, making it
+easier to locate a particular race.
+
+RaceTimes will also remember the best times for each logged-in character
+on each race, and can optionally display the best time across all saved
+characters rather than just the current character.
 
 
 Installation
@@ -36,9 +40,18 @@ you are in combat, though the pin will still be set.
 If there are any races in your current zone, the race list will
 automatically scroll to that zone when opened.
 
+By default, the race list shows the best times for the character you are
+currently playing.  You can instead have it show the best time across
+every character you've played with the addon loaded by turning on the
+"Show best time across all saved characters" option in the addon's
+settings menu, accessed through the usual in-game options window (go to
+the "AddOns" tab and click "RaceTimes" in the addon list) or with the
+command `/racetimes settings` (or `/rt settings`).
+
 The race list can also be opened with the macro command
 `/run RaceTimes.Show()`, for integration with custom buttons or other
-addons.
+addons.  The settings window can similarly be opened using
+`/run RaceTimes.ShowSettings()`.
 
 
 Reporting bugs

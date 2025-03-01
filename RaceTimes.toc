@@ -14,6 +14,7 @@
 ## Category-zhCN: 其它
 ## Category-zhTW: 其他
 ## IconTexture: Interface/AddOns/RaceTimes/textures/icon.png
+## SavedVariables: RaceTimes_saved_chars, RaceTimes_saved_times, RaceTimes_settings
 
 RaceTimes.lua
 l10n.lua
@@ -21,6 +22,8 @@ l10n.lua
 _class.lua
 _frame.lua
 data.lua
+savedtimes.lua
+settings.lua
 slashcmd.lua
 ui.lua
 ui.xml

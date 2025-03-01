@@ -309,9 +309,10 @@ function RaceTimes_LoadData(frame)  -- referenced by XML
     local time_labels = frame.time_labels
     if not time_labels then return end  -- when called from XML load
     local category = RaceTimes.UI.active_category
+    local show_saved_best = RaceTimes_settings["show_saved_best"]
     for _, zone, race in RaceTimes.Data.EnumerateRaces() do
         local label = time_labels[RaceTag(zone.name, race.name)]
-        local time, rank = race:GetTime(category)
+        local time, rank = race:GetTime(category, show_saved_best)
         label:SetTime(time, rank)
     end
 end
@@ -485,4 +486,8 @@ function RaceTimes.UI.Open()
     else
         ScrollToCurrentMap()
     end
+end
+
+function RaceTimes.UI.RefreshTimes()
+    RaceTimes_LoadData(RaceTimesFrame)
 end

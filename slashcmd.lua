@@ -9,14 +9,19 @@ function RaceTimes.SlashCmd.Init()
     SLASH_RACETIMES1 = "/racetimes"
     SLASH_RACETIMES2 = "/rt"
     SlashCmdHelp["RACETIMES"] = {
-        args = nil,
-        help = "Open the dragon racing personal best time list."
+        args = "[|cFFFFFF00settings|r]",
+        help = {"Opens the dragon racing personal best time list.",
+                'With the "settings" subcommand, instead opens the addon settings window.'},
     }
     SlashCmdList["RACETIMES"] = function(arg)
         if arg == "dump" then
             RaceTimes.Data.DumpLastTimes()
             return
         end
-        RaceTimes.UI.Open()
+        if arg == nil or arg == "" then
+            RaceTimes.UI.Open()
+        elseif arg == "settings" then
+            RaceTimes.Settings.Open()
+        end
     end
 end

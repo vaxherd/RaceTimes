@@ -14,6 +14,7 @@ RaceTimes.Category = {
     REV_CHALL = 5,  -- Reverse challenge race
     STORM     = 6,  -- Storm Gryphon race
 }
+local MAX_CATEGORY = 6
 
 ------------------------------------------------------------------------
 
@@ -55,19 +56,41 @@ end
 
 -- Returns the recorded best time for the given race and category, in
 -- milliseconds, and the time rank (1 = gold, 2 = silver, 3 = bronze).
+-- If use_saved is true, returns the best time across all saved characters
+-- rather than just the current character.
 -- Returns time 0 and rank 0 if no time has been recorded for the given
 -- race and category.
 -- Returns nil if the category is not available for that race (such as
 -- Reverse for the free-order races).
-function Race:GetTime(category)
+function Race:GetTime(category, use_saved)
     local instance = self.instances[category]
     if not instance then return nil end
-    local currency = instance.currency
-    local time = C_CurrencyInfo.GetCurrencyInfo(currency).quantity
+    local time
+    if use_saved then
+        time = RaceTimes.SavedTimes.GetBestTime(instance)
+    else
+        local ci = C_CurrencyInfo.GetCurrencyInfo(instance.currency)
+        time = (ci and ci.quantity) or 0
+    end
     local rank = (time == 0 and 0 or
                   time <= instance.gold and 1 or
                   time <= instance.silver and 2 or 3)
     return time, rank
+end
+
+-- Enumerator function for Race:EnumerateInstances().
+local function InstanceEnumerator(race, index)
+    index = index + 1
+    if index > MAX_CATEGORY then return nil end
+    if race.instances[index] then return index, race.instances[index] end
+    return InstanceEnumerator(race, index)
+end
+
+-- Enumerates all instances of the given race.  Intended for use as a
+-- generic for iterator.  Iteration returns two values: the numeric
+-- category ID (a RaceTimes.Category enumerator) and the instance itself.
+function Race:EnumerateInstances()
+    return InstanceEnumerator, self, 0
 end
 
 
@@ -622,7 +645,7 @@ local ZONES = {
 
 ------------------------------------------------------------------------
 
--- Return the data for the given race, or nil if not known.
+-- Returns the data for the given race, or nil if not known.
 local function GetRace(zone, race)
     for _, zone_data in ipairs(ZONES) do
         if zone_data[1] == zone then
@@ -647,7 +670,7 @@ local function AllRacesEnumerator(_, state)
         i_zone = i_zone + 1
         zone = ZONES[i_zone]
         if not zone then
-            return nil, nil
+            return nil
         end
         i_race = 0
     end
@@ -657,16 +680,16 @@ end
 
 ------------------------------------------------------------------------
 
--- Enumerate all zones.  Intended for use as a generic for iterator.
--- Iteration returns two variables, an iterator and the actual zone object
+-- Enumerates all zones.  Intended for use as a generic for iterator.
+-- Iteration returns two values, an iterator and the actual zone object
 -- (like ipairs()).
 function RaceTimes.Data.EnumerateZones()
     return ipairs(ZONES)
 end
 
--- Enumerate all races.  Intended for use as a generic for iterator.
--- Iteration returns three variables: an iterator (like ipairs()), the
--- zone object, and the race object.
+-- Enumerates all races.  Intended for use as a generic for iterator.
+-- Iteration returns three values: an iterator (like ipairs()), the zone
+-- object, and the race object.
 -- Races for a single zone can be enumerated with ipairs(zone.races).
 function RaceTimes.Data.EnumerateRaces()
     return AllRacesEnumerator, nil, nil
