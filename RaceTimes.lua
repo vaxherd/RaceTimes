@@ -1,7 +1,7 @@
 local module_name
 module_name, RaceTimes = ...
 
-RaceTimes.VERSION = "2.0"
+RaceTimes.VERSION = "2.1"
 
 RaceTimes.startup_frame = CreateFrame("Frame")
 -- We wait for PLAYER_LOGIN instead of running immediately on ADDON_LOADED
