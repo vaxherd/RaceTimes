@@ -37,8 +37,11 @@ Click the map link next to each name (or the name itself) to open the
 world map with a pin on the race's location.  The map will not open if
 you are in combat, though the pin will still be set.
 
+Races are grouped by continent (such as Dragon Isles or Khaz Algar),
+with a column of buttons on the left side for choosing a continent.
 If there are any races in your current zone, the race list will
-automatically scroll to that zone when opened.
+automatically select the appropriate continent and scroll to the
+current zone when opened.
 
 By default, the race list shows the best times for the character you are
 currently playing.  You can instead have it show the best time across

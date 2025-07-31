@@ -1,5 +1,49 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
+  <Button name="RaceTimesZoneButtonTemplate" virtual="true">
+    <Size x="50" y="50"/>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture parentKey="background" alphaMode="ADD">
+          <Color r="0.3" g="0.3" b="0.3"/>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+        <Texture parentKey="icon">
+          <Size x="35" y="35"/>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="OVERLAY">
+        <MaskTexture parentKey="icon_mask" file="Interface/CHARACTERFRAME/TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeKey="$parent.icon"/>
+            <Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+          </Anchors>
+          <MaskedTextures>
+            <MaskedTexture childKey="icon"/>
+          </MaskedTextures>
+        </MaskTexture>
+        <Texture parentKey="icon_ring" file="Interface/MINIMAP/minimap-trackingborder">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.59375"/>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeKey="$parent.icon" x="-6" y="6"/>
+            <Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="6" y="-6"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnEnter>self:OnEnter()</OnEnter>
+      <OnLeave>self:OnLeave()</OnLeave>
+      <OnClick>
+        RaceTimes_ChangeZoneGroup(self:GetID())
+      </OnClick>
+    </Scripts>
+  </Button>
+
   <Button name="RaceTimesCategoryButtonTemplate" inherits="UIPanelButtonNoTooltipTemplate" virtual="true">
     <Size x="105" y="21"/>
     <Scripts>
@@ -10,7 +54,7 @@
   </Button>
 
   <Frame name="RaceTimesFrame" frameStrata="HIGH" parent="UIParent" enableMouse="true" movable="true">
-    <size x="400" y="600"/>
+    <size x="455" y="600"/>
     <Anchors>
       <Anchor point="CENTER" y="100"/>
     </Anchors>
@@ -19,26 +63,50 @@
       <Frame parentKey="border" inherits="DialogBorderTemplate">
         <Layers>
           <Layer level="ARTWORK">
+            <!-- Top button bar horizontal divider -->
             <Texture file="Interface/DialogFrame/UI-DialogBox-Divider">
-              <TexCoords left="0" right="0.0625" top="0" bottom="0.5"/>
-              <Size x="8" y="16"/>
+              <TexCoords left="0" right="0.6875" top="0" bottom="0.5"/>
+              <TextureSliceMargins left="8" right="9" top="0" bottom="0"/>
+              <TextureSliceMode mode="Stretched"/>
+              <Size y="16"/>
               <Anchors>
                 <Anchor point="TOPLEFT" x="8" y="-84"/>
-              </Anchors>
-            </Texture>
-            <Texture file="Interface/DialogFrame/UI-DialogBox-Divider">
-              <TexCoords left="0.6875" right="0.75390625" top="0" bottom="0.5"/>
-              <Size x="9" y="16"/>
-              <Anchors>
                 <Anchor point="TOPRIGHT" x="-8" y="-84"/>
               </Anchors>
             </Texture>
+          </Layer>
+          <Layer level="ARTWORK" textureSubLevel="1">
+            <!-- Zone button bar vertical divider (3-slice, because
+                 texture slicing apparently doesn't work with rotation) -->
             <Texture file="Interface/DialogFrame/UI-DialogBox-Divider">
-              <TexCoords left="0.0625" right="0.6875" top="0" bottom="0.5"/>
-              <Size y="16"/>
+              <TexCoords>
+                <Rect ULx="0" ULy="0" URx="0" URy="0.5"
+                      LLx="0.0625" LLy="0" LRx="0.0625" LRy="0.5"/>
+              </TexCoords>
+              <Size x="16" y="8"/>
               <Anchors>
-                <Anchor point="TOPLEFT" x="16" y="-84"/>
-                <Anchor point="TOPRIGHT" x="-17" y="-84"/>
+                <Anchor point="TOP" relativePoint="TOPLEFT" x="63" y="-92"/>
+              </Anchors>
+            </Texture>
+            <Texture file="Interface/DialogFrame/UI-DialogBox-Divider">
+              <TexCoords>
+                <Rect ULx="0.6875" ULy="0" URx="0.6875" URy="0.5"
+                      LLx="0.75390625" LLy="0" LRx="0.75390625" LRy="0.5"/>
+              </TexCoords>
+              <Size x="16" y="9"/>
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="BOTTOMLEFT" x="63" y="7.5"/>
+              </Anchors>
+            </Texture>
+            <Texture file="Interface/DialogFrame/UI-DialogBox-Divider">
+              <TexCoords>
+                <Rect ULx="0.0625" ULy="0" URx="0.0625" URy="0.5"
+                      LLx="0.6875" LLy="0" LRx="0.6875" LRy="0.5"/>
+              </TexCoords>
+              <Size x="16"/>
+              <Anchors>
+                <Anchor point="TOP" relativePoint="TOPLEFT" x="63" y="-100"/>
+                <Anchor point="BOTTOM" relativePoint="BOTTOMLEFT" x="63" y="16.5"/>
               </Anchors>
             </Texture>
           </Layer>
@@ -74,9 +142,17 @@
         <!-- Buttons are added programmatically -->
       </Frame>
 
-      <ScrollFrame parentKey="scroll" inherits="ScrollFrameTemplate">
+      <Frame parentKey="zone_select">
         <Anchors>
           <Anchor point="TOPLEFT" x="10" y="-99"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="60" y="10"/>
+        </Anchors>
+        <!-- Buttons are added programmatically -->
+      </Frame>
+
+      <ScrollFrame parentKey="scroll" inherits="ScrollFrameTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.zone_select" relativePoint="TOPRIGHT" x="5" y="0"/>
           <Anchor point="BOTTOMRIGHT" x="-32" y="10"/>
         </Anchors>
         <ScrollChild>

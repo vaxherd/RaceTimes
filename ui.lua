@@ -178,8 +178,9 @@ function TimeLabel:OnEnter()
 end
 
 function TimeLabel:OnLeave()
-    if GameTooltip:IsForbidden() then return end
-    GameTooltip:Hide()
+    if GameTooltip:GetOwner() == self then
+        GameTooltip:Hide()
+    end
 end
 
 function TimeLabel:UpdateTooltip()
@@ -270,6 +271,45 @@ end
 
 ------------------------------------------------------------------------
 
+local ZoneButton = class(Button)
+
+function ZoneButton:__allocator(parent, group)
+    return Button.__allocator("Button", nil, parent,
+                              "RaceTimesZoneButtonTemplate")
+end
+
+function ZoneButton:__constructor(parent, group)
+    self.group = group
+    self:SetID(group.group_map)
+    if type(group.icon_texture) == "number" then
+        SetPortraitTextureFromCreatureDisplayID(self.icon, group.icon_texture)
+    else
+        self.icon:SetTexture(group.icon_texture)
+    end
+    self.background:Hide()
+end
+
+function ZoneButton:SetCurrent(current)
+    self.background:SetShown(current)
+end
+
+function ZoneButton:OnEnter()
+    if GameTooltip:IsForbidden() then return end
+    GameTooltip:SetOwner(self, "ANCHOR_NONE")
+    GameTooltip:SetPoint("RIGHT", self, "LEFT")
+    GameTooltip:AddLine(self.group:GetLocalizedName(),
+                        WHITE_FONT_COLOR:GetRGB())
+    GameTooltip:Show()
+end
+
+function ZoneButton:OnLeave()
+    if GameTooltip:GetOwner() == self then
+        GameTooltip:Hide()
+    end
+end
+
+------------------------------------------------------------------------
+
 local function RaceTag(zone, race)
     return zone .. "/" .. race
 end
@@ -277,13 +317,11 @@ end
 local function AddRace(frame, zone, race)
     frame.race_anchors[RaceTag(zone.name, race.name)] = -(frame.yofs)
 
-    local f = frame.scroll.content
-
-    local time_label = TimeLabel(f, race)
-    frame.time_labels[RaceTag(zone.name, race.name)] = time_label
+    local time_label = TimeLabel(frame, race)
+    RaceTimesFrame.time_labels[RaceTag(zone.name, race.name)] = time_label
     time_label:SetSinglePoint("TOPRIGHT", -5, frame.yofs)
 
-    local race_label = RaceLabel(f, race)
+    local race_label = RaceLabel(frame, race)
     race_label:SetPoint("TOPLEFT", 30, frame.yofs)
     race_label:SetPoint("TOPRIGHT", time_label, "TOPLEFT", -5, 0)
 
@@ -293,7 +331,7 @@ end
 local function AddZone(frame, zone)
     frame.zone_anchors[zone.map_id] = -(frame.yofs)
 
-    local label = frame.scroll.content:CreateFontString(
+    local label = frame:CreateFontString(
         nil, "ARTWORK", "GameFontHighlightLarge")
     label:SetPoint("TOPLEFT", 10, frame.yofs-20)
     label:SetTextScale(TEXT_SCALE)
@@ -320,12 +358,33 @@ end
 function RaceTimes_ChangeCategory(category)  -- referenced by XML
     RaceTimes.UI.active_category = category
     local frame = RaceTimesFrame
-    for _, button in ipairs(frame.buttons) do
+    for _, button in ipairs(frame.category_buttons) do
         button:SetCurrent(button:GetID() == category)
     end
     if frame:IsShown() then
         RaceTimes_LoadData(frame)
     end
+ end
+
+function RaceTimes_ChangeZoneGroup(group)  -- referenced by XML
+    RaceTimes.UI.active_zone_group = group
+    local frame = RaceTimesFrame
+    for _, button in ipairs(frame.zone_buttons) do
+        button:SetCurrent(button:GetID() == group)
+    end
+    local active_group_frame
+    for group_map, group_frame in pairs(frame.group_frames) do
+        if group_map == group then
+            frame.scroll.content:SetSize(group_frame:GetWidth(),
+                                         group_frame:GetHeight())
+            frame.scroll:SetVerticalScroll(0)
+            group_frame:Show()
+            active_group_frame = group_frame
+        else
+            group_frame:Hide()
+        end
+    end
+    return active_group_frame
  end
 
 ------------------------------------------------------------------------
@@ -383,7 +442,8 @@ local function ActiveRaceTimer_OnEvent(event, ...)
                 active_race_gold = new_instance.gold
                 active_race_silver = new_instance.silver
                 RaceTimes_ChangeCategory(new_category)
-                local yofs = RaceTimesFrame.race_anchors[tag]
+                local group_frame = RaceTimes_ChangeZoneGroup(RaceTimes.Data.FindZoneGroupForMap(new_zone.map_id).group_map)
+                local yofs = group_frame.race_anchors[tag]
                 yofs = yofs + active_race_label:GetHeight()/2
                 yofs = yofs - RaceTimesFrame.scroll:GetHeight()/2
                 if yofs < 0 then yofs = 0 end
@@ -418,11 +478,11 @@ function RaceTimes.UI.Init()
     frame.header:SetWidth(frame.header.Text:GetUnboundedStringWidth() + 50)
 
     local category_select = frame.category_select
-    frame.buttons = {}
+    frame.category_buttons = {}
     local layout = {}
     for _, button_setup in ipairs(BUTTON_LAYOUT) do
         local button = CategoryButton(category_select, button_setup.category)
-        tinsert(frame.buttons, button)
+        tinsert(frame.category_buttons, button)
         layout[button_setup.y] = layout[button_setup.y] or {}
         layout[button_setup.y][button_setup.x] = button
     end
@@ -431,23 +491,51 @@ function RaceTimes.UI.Init()
             if x == 0 then
                 button:SetSinglePoint("CENTER", 0, 13 - 26*y)
             elseif x < 0 then
-                button:SetSinglePoint("RIGHT", layout[y][0], "LEFT", -10, 0)
+                button:SetSinglePoint("RIGHT", layout[y][0], "LEFT", -15, 0)
             else  -- x > 0
-                button:SetSinglePoint("LEFT", layout[y][0], "RIGHT", 10, 0)
+                button:SetSinglePoint("LEFT", layout[y][0], "RIGHT", 15, 0)
             end
         end
     end
 
-    frame.time_labels = {}
-    frame.zone_anchors = {}
-    frame.race_anchors = {}
-    frame.yofs = 0
-    for _, zone in RaceTimes.Data.EnumerateZones() do
-        AddZone(frame, zone)
+    local zone_select = frame.zone_select
+    frame.zone_buttons = {}
+    for _, group_data in RaceTimes.Data.EnumerateZoneGroups() do
+        local button = ZoneButton(zone_select, group_data)
+        tinsert(frame.zone_buttons, button)
+        if #frame.zone_buttons > 1 then
+            button:SetPoint(
+                "TOP", frame.zone_buttons[#frame.zone_buttons-1], "BOTTOM")
+        else
+            button:SetPoint("TOP")
+        end
     end
-    frame.scroll.content:SetSize(frame.scroll:GetWidth(), -(frame.yofs)+10)
+
+    frame.time_labels = {}
+    frame.group_frames = {}
+    local zone_group_mapping = {}
+    for _, group_data in RaceTimes.Data.EnumerateZoneGroups() do
+        local group_frame = CreateFrame("Frame", nil, frame.scroll.content)
+        frame.group_frames[group_data.group_map] = group_frame
+        group_frame:SetPoint("TOPLEFT")
+        group_frame:SetWidth(frame.scroll:GetWidth())
+        group_frame:Hide()
+        group_frame.yofs = 0
+        group_frame.zone_anchors = {}
+        group_frame.race_anchors = {}
+        for _, zone in ipairs(group_data.zone_maps) do
+            zone_group_mapping[zone] = group_data.group_map
+        end
+    end
+    for _, zone in RaceTimes.Data.EnumerateZones() do
+        local group_frame = frame.group_frames[zone_group_mapping[zone.map_id]]
+        assert(group_frame)
+        AddZone(group_frame, zone)
+        group_frame:SetHeight(-(group_frame.yofs)+10)
+    end
 
     RaceTimes_ChangeCategory(RaceTimes.Category.NORMAL)
+    RaceTimes_ChangeZoneGroup(2274)  -- Khaz Algar
 
     InitActiveRaceTimer()
 end
@@ -458,9 +546,13 @@ local function ScrollToCurrentMap()
     -- The top-level ("Cosmic") map has a parent ID of 0, but we play
     -- it safe and check for nil as well.
     while map_id and map_id > 0 do
-        local yofs = RaceTimesFrame.zone_anchors[map_id]
-        if yofs then
-            RaceTimesFrame.scroll:SetVerticalScroll(yofs)
+        local group = RaceTimes.Data.FindZoneGroupForMap(map_id)
+        if group then
+            local group_frame = RaceTimes_ChangeZoneGroup(group.group_map)
+            local yofs = group_frame.zone_anchors[map_id]
+            if yofs then
+                RaceTimesFrame.scroll:SetVerticalScroll(yofs)
+            end
             break
         end
         local info = C_Map.GetMapInfo(map_id)

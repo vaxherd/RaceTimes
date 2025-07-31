@@ -120,6 +120,40 @@ function Zone:GetLocalizedName()
 end
 
 
+local ZoneGroup = class()
+function ZoneGroup:__constructor(name, group_map, icon_texture, zone_maps)
+    self.name = name
+    self.group_map = group_map
+    self.icon_texture = icon_texture
+    self.zone_maps = zone_maps
+end
+
+-- Returns the localized name of the zone group, if possible; otherwise
+-- returns the default name passed to the constructor.
+function ZoneGroup:GetLocalizedName()
+    local info = C_Map.GetMapInfo(self.group_map)
+    return ((info and info.name) or self.name)
+end
+
+
+-- Ordered list of zone groups.
+
+local ZONE_GROUPS = {
+    ZoneGroup("Dragon Isles", 1978,
+              "Interface/CHARACTERFRAME/TemporaryPortrait-Male-Dracthyr",
+              {2022, 2023, 2024, 2025, 2151, 2133, 2200}),
+    ZoneGroup("Khaz Algar", 2274,
+              117238,  -- High Speaker Brinthe
+              {2248, 2214, 2215, 2255, 2346}),
+    ZoneGroup("Kalimdor", 12,
+              "Interface/CHARACTERFRAME/TemporaryPortrait-Female-NightElf",
+              {12}),
+    ZoneGroup("Northrend", 113,
+              30721,  -- Lich King
+              {113}),
+}
+
+
 -- Ordered list of all known races, broken down by zone.
 -- We don't currently make use of the aura or quest IDs, but we
 -- save them for future reference just in case they become useful.
@@ -416,124 +450,6 @@ local ZONES = {
                                  REV_CHALL = {77845, 2695, 97, 100}}},
     }),
 
-    Zone("Kalimdor", 12, {
-         {51.078,22.454,415866, "Felwood Flyover",
-                                {NORMAL    = {75277, 2312, 70, 75},
-                                 ADVANCED  = {75293, 2342, 63, 66},
-                                 REVERSE   = {75294, 2372, 62, 65}}},
-         {60.573,25.704,415867, "Winter Wander",
-                                {NORMAL    = {75310, 2313, 80, 85},
-                                 ADVANCED  = {75311, 2343, 73, 76},
-                                 REVERSE   = {75312, 2373, 70, 73}}},
-         {55.444,28.147,415868, "Nordrassil Spiral",
-                                {NORMAL    = {75317, 2314, 45, 50},
-                                 ADVANCED  = {75318, 2344, 41, 46},
-                                 REVERSE   = {75319, 2374, 41, 46}}},
-         {51.436,31.186,415869, "Hyjal Hotfoot",
-                                {NORMAL    = {75330, 2315, 70, 75},
-                                 ADVANCED  = {75331, 2345, 69, 72},
-                                 REVERSE   = {75332, 2375, 67, 72}}},
-         {65.612,32.161,415870, "Rocketway Ride",  -- Listed in the Kalimdor Cup quest objectives as "The Aszhara Rocketway Ride", but the best times aura name is just "Rocketway Ride".
-                                {NORMAL    = {75347, 2316,101,106},
-                                 ADVANCED  = {75355, 2346, 94,100},
-                                 REVERSE   = {75356, 2376, 94,100}}},
-         {47.560,35.914,415871, "Ashenvale Ambit",
-                                {NORMAL    = {75378, 2317, 64, 69},
-                                 ADVANCED  = {75379, 2347, 59, 64},
-                                 REVERSE   = {75380, 2377, 59, 64}}},
-         {59.886,51.833,415872, "Durotar Tour",
-                                {NORMAL    = {75385, 2318, 82, 87},
-                                 ADVANCED  = {75386, 2348, 75, 80},
-                                 REVERSE   = {75387, 2378, 75, 80}}},
-         {46.478,50.215,415873, "Webwinder Weave",
-                                {NORMAL    = {75394, 2319, 80, 85},
-                                 ADVANCED  = {75395, 2349, 73, 78},
-                                 REVERSE   = {75396, 2379, 70, 75}}},
-         {38.305,56.063,415874, "Desolace Drift",
-                                {NORMAL    = {75409, 2320, 78, 83},
-                                 ADVANCED  = {75410, 2350, 70, 75},
-                                 REVERSE   = {75411, 2380, 71, 76}}},
-         {51.040,51.962,415875, "Great Divide Dive",
-                                {NORMAL    = {75412, 2321, 48, 53},
-                                 ADVANCED  = {75413, 2351, 43, 48},
-                                 REVERSE   = {75414, 2381, 44, 49}}},
-         {51.314,68.089,415876, "Razorfen Roundabout",
-                                {NORMAL    = {75437, 2322, 53, 58},
-                                 ADVANCED  = {75438, 2352, 47, 52},
-                                 REVERSE   = {75439, 2382, 48, 53}}},
-         {48.717,68.415,415877, "Thousand Needles Thread",
-                                {NORMAL    = {75463, 2323, 87, 92},
-                                 ADVANCED  = {75464, 2353, 77, 82},
-                                 REVERSE   = {75465, 2383, 77, 82}}},
-         {43.700,70.088,415878, "Feralas Ruins Ramble",
-                                {NORMAL    = {75468, 2324, 89, 94},
-                                 ADVANCED  = {75469, 2354, 84, 89},
-                                 REVERSE   = {75470, 2384, 84, 89}}},
-         {42.629,83.398,415879, "Ahn'Qiraj Circuit",
-                                {NORMAL    = {75472, 2325, 77, 82},
-                                 ADVANCED  = {75473, 2355, 68, 73},
-                                 REVERSE   = {75474, 2385, 69, 74}}},
-         {49.129,90.001,415880, "Uldum Tour",
-                                {NORMAL    = {75481, 2326, 84, 89},
-                                 ADVANCED  = {75482, 2356, 76, 81},
-                                 REVERSE   = {75483, 2386, 76, 81}}},
-         {50.293,83.854,415881, "Un'Goro Crater Circuit",
-                                {NORMAL    = {75485, 2327,100,105},
-                                 ADVANCED  = {75486, 2357, 90, 95},
-                                 REVERSE   = {75487, 2387, 92, 97}}},
-    }),
-
-    Zone("Northrend", 113, {
-         {72.69, 85.34, 432043, "Scalawag Slither",
-                                {NORMAL    = {78301, 2720, 73, 78},
-                                 ADVANCED  = {78302, 2738, 68, 71},
-                                 REVERSE   = {78303, 2756, 70, 73}}},
-         {77.74, 79.39, 432044, "Daggercap Dart",
-                                {NORMAL    = {78325, 2721, 77, 82},
-                                 ADVANCED  = {78326, 2739, 76, 79},
-                                 REVERSE   = {78327, 2757, 76, 79}}},
-         {70.17, 56.63, 432045, "Blackriver Burble",
-                                {NORMAL    = {78334, 2722, 75, 80},
-                                 ADVANCED  = {78335, 2740, 67, 70},
-                                 REVERSE   = {78336, 2758, 71, 74}}},
-         {77.17, 31.95, 432054, "Gundrak Fast Track",
-                                {NORMAL    = {79268, 2730, 60, 65},
-                                 ADVANCED  = {79269, 2748, 57, 60},
-                                 REVERSE   = {79270, 2766, 57, 60}}},
-         {65.63, 37.83, 432046, "Zul'Drak Zephyr",
-                                {NORMAL    = {78346, 2723, 65, 70},
-                                 ADVANCED  = {78347, 2741, 62, 65},
-                                 REVERSE   = {78349, 2759, 67, 70}}},  -- 7834"9" is not a typo!  78348 apparently got skipped.
-         {59.79, 15.53, 432047, "Makers' Marathon",
-                                {NORMAL    = {78389, 2724, 100, 105},
-                                 ADVANCED  = {78390, 2742, 93, 96},
-                                 REVERSE   = {78391, 2760, 98, 101}}},
-         {57.36, 46.87, 432048, "Crystalsong Crisis",
-                                {NORMAL    = {78441, 2725, 97, 102},
-                                 ADVANCED  = {78442, 2743, 94, 97},
-                                 REVERSE   = {78443, 2761, 96, 99}}},
-         {51.125,47.57, 432049, "Dragonblight Dragon Flight",
-                                {NORMAL    = {78454, 2726, 115, 120},
-                                 ADVANCED  = {78455, 2744, 110, 113},
-                                 REVERSE   = {78456, 2762, 110, 113}}},
-         {40.14, 43.67, 432050, "Citadel Sortie",
-                                {NORMAL    = {78499, 2727, 110, 115},
-                                 ADVANCED  = {78500, 2745, 103, 106},
-                                 REVERSE   = {78501, 2763, 104, 107}}},
-         {33.39, 43.01, 432051, "Sholazar Spree",
-                                {NORMAL    = {78558, 2728, 88, 93},
-                                 ADVANCED  = {78559, 2746, 85, 88},
-                                 REVERSE   = {78560, 2764, 85, 88}}},
-         {22.885,54.185,432052, "Geothermal Jaunt",
-                                {NORMAL    = {78608, 2729, 45, 50},
-                                 ADVANCED  = {78609, 2747, 37, 40},
-                                 REVERSE   = {78610, 2765, 37, 40}}},
-         {16.215,56.74, 432055, "Coldarra Climb",
-                                {NORMAL    = {79272, 2731, 57, 62},
-                                 ADVANCED  = {79273, 2749, 53, 56},
-                                 REVERSE   = {79274, 2767, 55, 58}}},
-    }),
-
     Zone("Isle of Dorn", 2248, {
          {48.089,35.183,444141, "Dornogal Drift",
                                 {NORMAL    = {80219, 2923, 48, 53},
@@ -656,6 +572,124 @@ local ZONES = {
                                 {NORMAL    = {85101, 3126, 40, 50},
                                  REVERSE   = {85102, 3127, 40, 50}}},
     }),
+
+    Zone("Kalimdor", 12, {
+         {51.078,22.454,415866, "Felwood Flyover",
+                                {NORMAL    = {75277, 2312, 70, 75},
+                                 ADVANCED  = {75293, 2342, 63, 66},
+                                 REVERSE   = {75294, 2372, 62, 65}}},
+         {60.573,25.704,415867, "Winter Wander",
+                                {NORMAL    = {75310, 2313, 80, 85},
+                                 ADVANCED  = {75311, 2343, 73, 76},
+                                 REVERSE   = {75312, 2373, 70, 73}}},
+         {55.444,28.147,415868, "Nordrassil Spiral",
+                                {NORMAL    = {75317, 2314, 45, 50},
+                                 ADVANCED  = {75318, 2344, 41, 46},
+                                 REVERSE   = {75319, 2374, 41, 46}}},
+         {51.436,31.186,415869, "Hyjal Hotfoot",
+                                {NORMAL    = {75330, 2315, 70, 75},
+                                 ADVANCED  = {75331, 2345, 69, 72},
+                                 REVERSE   = {75332, 2375, 67, 72}}},
+         {65.612,32.161,415870, "Rocketway Ride",  -- Listed in the Kalimdor Cup quest objectives as "The Aszhara Rocketway Ride", but the best times aura name is just "Rocketway Ride".
+                                {NORMAL    = {75347, 2316,101,106},
+                                 ADVANCED  = {75355, 2346, 94,100},
+                                 REVERSE   = {75356, 2376, 94,100}}},
+         {47.560,35.914,415871, "Ashenvale Ambit",
+                                {NORMAL    = {75378, 2317, 64, 69},
+                                 ADVANCED  = {75379, 2347, 59, 64},
+                                 REVERSE   = {75380, 2377, 59, 64}}},
+         {59.886,51.833,415872, "Durotar Tour",
+                                {NORMAL    = {75385, 2318, 82, 87},
+                                 ADVANCED  = {75386, 2348, 75, 80},
+                                 REVERSE   = {75387, 2378, 75, 80}}},
+         {46.478,50.215,415873, "Webwinder Weave",
+                                {NORMAL    = {75394, 2319, 80, 85},
+                                 ADVANCED  = {75395, 2349, 73, 78},
+                                 REVERSE   = {75396, 2379, 70, 75}}},
+         {38.305,56.063,415874, "Desolace Drift",
+                                {NORMAL    = {75409, 2320, 78, 83},
+                                 ADVANCED  = {75410, 2350, 70, 75},
+                                 REVERSE   = {75411, 2380, 71, 76}}},
+         {51.040,51.962,415875, "Great Divide Dive",
+                                {NORMAL    = {75412, 2321, 48, 53},
+                                 ADVANCED  = {75413, 2351, 43, 48},
+                                 REVERSE   = {75414, 2381, 44, 49}}},
+         {51.314,68.089,415876, "Razorfen Roundabout",
+                                {NORMAL    = {75437, 2322, 53, 58},
+                                 ADVANCED  = {75438, 2352, 47, 52},
+                                 REVERSE   = {75439, 2382, 48, 53}}},
+         {48.717,68.415,415877, "Thousand Needles Thread",
+                                {NORMAL    = {75463, 2323, 87, 92},
+                                 ADVANCED  = {75464, 2353, 77, 82},
+                                 REVERSE   = {75465, 2383, 77, 82}}},
+         {43.700,70.088,415878, "Feralas Ruins Ramble",
+                                {NORMAL    = {75468, 2324, 89, 94},
+                                 ADVANCED  = {75469, 2354, 84, 89},
+                                 REVERSE   = {75470, 2384, 84, 89}}},
+         {42.629,83.398,415879, "Ahn'Qiraj Circuit",
+                                {NORMAL    = {75472, 2325, 77, 82},
+                                 ADVANCED  = {75473, 2355, 68, 73},
+                                 REVERSE   = {75474, 2385, 69, 74}}},
+         {49.129,90.001,415880, "Uldum Tour",
+                                {NORMAL    = {75481, 2326, 84, 89},
+                                 ADVANCED  = {75482, 2356, 76, 81},
+                                 REVERSE   = {75483, 2386, 76, 81}}},
+         {50.293,83.854,415881, "Un'Goro Crater Circuit",
+                                {NORMAL    = {75485, 2327,100,105},
+                                 ADVANCED  = {75486, 2357, 90, 95},
+                                 REVERSE   = {75487, 2387, 92, 97}}},
+    }),
+
+    Zone("Northrend", 113, {
+         {72.69, 85.34, 432043, "Scalawag Slither",
+                                {NORMAL    = {78301, 2720, 73, 78},
+                                 ADVANCED  = {78302, 2738, 68, 71},
+                                 REVERSE   = {78303, 2756, 70, 73}}},
+         {77.74, 79.39, 432044, "Daggercap Dart",
+                                {NORMAL    = {78325, 2721, 77, 82},
+                                 ADVANCED  = {78326, 2739, 76, 79},
+                                 REVERSE   = {78327, 2757, 76, 79}}},
+         {70.17, 56.63, 432045, "Blackriver Burble",
+                                {NORMAL    = {78334, 2722, 75, 80},
+                                 ADVANCED  = {78335, 2740, 67, 70},
+                                 REVERSE   = {78336, 2758, 71, 74}}},
+         {77.17, 31.95, 432054, "Gundrak Fast Track",
+                                {NORMAL    = {79268, 2730, 60, 65},
+                                 ADVANCED  = {79269, 2748, 57, 60},
+                                 REVERSE   = {79270, 2766, 57, 60}}},
+         {65.63, 37.83, 432046, "Zul'Drak Zephyr",
+                                {NORMAL    = {78346, 2723, 65, 70},
+                                 ADVANCED  = {78347, 2741, 62, 65},
+                                 REVERSE   = {78349, 2759, 67, 70}}},  -- 7834"9" is not a typo!  78348 apparently got skipped.
+         {59.79, 15.53, 432047, "Makers' Marathon",
+                                {NORMAL    = {78389, 2724, 100, 105},
+                                 ADVANCED  = {78390, 2742, 93, 96},
+                                 REVERSE   = {78391, 2760, 98, 101}}},
+         {57.36, 46.87, 432048, "Crystalsong Crisis",
+                                {NORMAL    = {78441, 2725, 97, 102},
+                                 ADVANCED  = {78442, 2743, 94, 97},
+                                 REVERSE   = {78443, 2761, 96, 99}}},
+         {51.125,47.57, 432049, "Dragonblight Dragon Flight",
+                                {NORMAL    = {78454, 2726, 115, 120},
+                                 ADVANCED  = {78455, 2744, 110, 113},
+                                 REVERSE   = {78456, 2762, 110, 113}}},
+         {40.14, 43.67, 432050, "Citadel Sortie",
+                                {NORMAL    = {78499, 2727, 110, 115},
+                                 ADVANCED  = {78500, 2745, 103, 106},
+                                 REVERSE   = {78501, 2763, 104, 107}}},
+         {33.39, 43.01, 432051, "Sholazar Spree",
+                                {NORMAL    = {78558, 2728, 88, 93},
+                                 ADVANCED  = {78559, 2746, 85, 88},
+                                 REVERSE   = {78560, 2764, 85, 88}}},
+         {22.885,54.185,432052, "Geothermal Jaunt",
+                                {NORMAL    = {78608, 2729, 45, 50},
+                                 ADVANCED  = {78609, 2747, 37, 40},
+                                 REVERSE   = {78610, 2765, 37, 40}}},
+         {16.215,56.74, 432055, "Coldarra Climb",
+                                {NORMAL    = {79272, 2731, 57, 62},
+                                 ADVANCED  = {79273, 2749, 53, 56},
+                                 REVERSE   = {79274, 2767, 55, 58}}},
+    }),
 }
 
 ------------------------------------------------------------------------
@@ -694,6 +728,25 @@ local function AllRacesEnumerator(_, state)
 end
 
 ------------------------------------------------------------------------
+
+-- Enumerates all zone groups.  Intended for use as a generic for iterator.
+-- Iteration returns two values, an iterator and the actual zone group object
+-- (like ipairs()).
+function RaceTimes.Data.EnumerateZoneGroups()
+    return ipairs(ZONE_GROUPS)
+end
+
+-- Return the zone group containing the given map, or nil if none.
+function RaceTimes.Data.FindZoneGroupForMap(map)
+    for _, group in ipairs(ZONE_GROUPS) do
+        for _, zone in ipairs(group.zone_maps) do
+            if zone == map then
+                return group
+            end
+        end
+    end
+    return nil
+end
 
 -- Enumerates all zones.  Intended for use as a generic for iterator.
 -- Iteration returns two values, an iterator and the actual zone object
