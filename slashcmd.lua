@@ -12,9 +12,10 @@ SlashCmdHelp = SlashCmdHelp or {}
 -- Convenience function to list all races in a map.
 local function DumpRaces(map)
     local races = C_AreaPoiInfo.GetDragonridingRacesForMap(map) or {}
+    print("Races on map "..map..":"..(#races==0 and " None" or ""))
     for _,race in ipairs(races) do
         local poi = C_AreaPoiInfo.GetAreaPOIInfo(map, race)
-        print(string.format("%.3f %.3f %s",
+        print(string.format("   %.3f %.3f %s",
                             poi.position.x*100, poi.position.y*100, poi.name))
     end
 end
@@ -43,8 +44,15 @@ function RaceTimes.SlashCmd.Init()
         elseif subcommand == "dump" then
             RaceTimes.Data.DumpLastTimes()
         elseif subcommand == "dumpraces" then
-            local map = tonumber(arg)
-            if not map then error("Usage: /racetimes dumpraces MAP-ID") end
+            local map
+            if arg == "" then
+                map = C_Map.GetBestMapForUnit("player")
+            else
+                map = tonumber(arg)
+                if not map then
+                    error("Usage: /racetimes dumpraces [MAP-ID]")
+                end
+            end
             DumpRaces(map)
         end
     end
