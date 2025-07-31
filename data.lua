@@ -10,9 +10,9 @@ RaceTimes.Category = {
     NORMAL    = 1,  -- Normal race (always available)
     ADVANCED  = 2,  -- Advanced race
     REVERSE   = 3,  -- Reverse race
-    CHALLENGE = 4,  -- Challenge race
-    REV_CHALL = 5,  -- Reverse challenge race
-    STORM     = 6,  -- Storm Gryphon race
+    CHALLENGE = 4,  -- Challenge race (Dragon Isles only)
+    REV_CHALL = 5,  -- Reverse challenge race (Dragon Isles only)
+    STORM     = 6,  -- Storm Gryphon race (Dragon Isles only)
 }
 local MAX_CATEGORY = 6
 

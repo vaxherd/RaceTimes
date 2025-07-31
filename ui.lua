@@ -372,6 +372,28 @@ function RaceTimes_ChangeZoneGroup(group)  -- referenced by XML
     for _, button in ipairs(frame.zone_buttons) do
         button:SetCurrent(button:GetID() == group)
     end
+
+    -- Only show Storm/Challenge/R-Challenge buttons when viewing
+    -- Dragon Isles races (since those categories only exist there).
+    local is_dragon_isles = (group == 1978)
+    local yofs = is_dragon_isles and 13 or 0
+    for _, button in ipairs(frame.category_buttons) do
+        local id = button:GetID()
+        local is_unique_cat = (id >= RaceTimes.Category.CHALLENGE)
+        local is_center = (id == RaceTimes.Category.ADVANCED or
+                           id == RaceTimes.Category.CHALLENGE)
+        button:SetShown(not is_unique_cat or is_dragon_isles)
+        if is_center then
+            button:ClearPointsOffset()
+            button:AdjustPointsOffset(0, is_unique_cat and -yofs or yofs)
+        end
+    end
+    if not is_dragon_isles
+    and RaceTimes.UI.active_category >= RaceTimes.Category.CHALLENGE
+    then
+        RaceTimes_ChangeCategory(RaceTimes.Category.NORMAL)
+    end
+
     local active_group_frame
     for group_map, group_frame in pairs(frame.group_frames) do
         if group_map == group then
