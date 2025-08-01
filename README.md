@@ -47,9 +47,10 @@ By default, the race list shows the best times for the character you are
 currently playing.  You can instead have it show the best time across
 every character you've played with the addon loaded by turning on the
 "Show best time across all saved characters" option in the addon's
-settings menu, accessed through the usual in-game options window (go to
-the "AddOns" tab and click "RaceTimes" in the addon list) or with the
-command `/racetimes settings`.
+settings menu; the settings menu can be accessed by clicking the "gear"
+button to the right of the category buttons, through the in-game options
+window (go to the "AddOns" tab and click "RaceTimes" in the addon list),
+or with the command `/racetimes settings`.
 
 The race list window can be moved by dragging the title bar.  If the
 window gets dragged to an inconvenient position, it can be reset to the

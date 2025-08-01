@@ -137,10 +137,41 @@
       <Frame parentKey="category_select">
         <Anchors>
           <Anchor point="TOPLEFT" x="10" y="-27"/>
-          <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-10" y="-64"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-50" y="-64"/>
         </Anchors>
         <!-- Buttons are added programmatically -->
       </Frame>
+
+      <Button parentKey="settings" inherits="UIPanelButtonNoTooltipTemplate">
+        <Size x="30" y="30"/>
+        <Anchors>
+          <Anchor point="CENTER" relativeKey="$parent.category_select" relativePoint="RIGHT" x="15" y="0"/>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <Texture parentKey="icon" atlas="questlog-icon-setting" useAtlasSize="true">
+              <Anchors>
+                <Anchor point="CENTER" x="0" y="-1.5"/>
+              </Anchors>
+            </Texture>
+            <Texture atlas="questlog-icon-setting" useAtlasSize="true" alphaMode="ADD" alpha="0.6">
+              <Anchors>
+                <Anchor point="CENTER" relativeKey="$parent.icon"/>
+              </Anchors>
+            </Texture>
+          </Layer>
+          <Layer level="HIGHLIGHT">
+            <Texture atlas="questlog-icon-setting" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
+              <Anchors>
+                <Anchor point="CENTER" relativeKey="$parent.icon"/>
+              </Anchors>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnClick>RaceTimes.ShowSettings()</OnClick>
+        </Scripts>
+      </Button>
 
       <Frame parentKey="zone_select">
         <Anchors>
