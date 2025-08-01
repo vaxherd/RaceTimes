@@ -376,7 +376,7 @@ function RaceTimes_ChangeZoneGroup(group)  -- referenced by XML
     -- Only show Storm/Challenge/R-Challenge buttons when viewing
     -- Dragon Isles races (since those categories only exist there).
     local is_dragon_isles = (group == 1978)
-    local yofs = is_dragon_isles and 13 or 0
+    local yofs = is_dragon_isles and 10 or 0
     for _, button in ipairs(frame.category_buttons) do
         local id = button:GetID()
         local is_unique_cat = (id >= RaceTimes.Category.CHALLENGE)
@@ -511,7 +511,7 @@ function RaceTimes.UI.Init()
     for y, row in pairs(layout) do
         for x, button in pairs(row) do
             if x == 0 then
-                button:SetSinglePoint("CENTER", 0, 13 - 26*y)
+                button:SetSinglePoint("CENTER", 0, 10 - 20*y)
             elseif x < 0 then
                 button:SetSinglePoint("RIGHT", layout[y][0], "LEFT", -15, 0)
             else  -- x > 0

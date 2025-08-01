@@ -70,8 +70,8 @@
               <TextureSliceMode mode="Stretched"/>
               <Size y="16"/>
               <Anchors>
-                <Anchor point="TOPLEFT" x="8" y="-84"/>
-                <Anchor point="TOPRIGHT" x="-8" y="-84"/>
+                <Anchor point="TOPLEFT" x="8" y="-64"/>
+                <Anchor point="TOPRIGHT" x="-8" y="-64"/>
               </Anchors>
             </Texture>
           </Layer>
@@ -85,7 +85,7 @@
               </TexCoords>
               <Size x="16" y="8"/>
               <Anchors>
-                <Anchor point="TOP" relativePoint="TOPLEFT" x="63" y="-92"/>
+                <Anchor point="TOP" relativePoint="TOPLEFT" x="63" y="-72"/>
               </Anchors>
             </Texture>
             <Texture file="Interface/DialogFrame/UI-DialogBox-Divider">
@@ -95,7 +95,7 @@
               </TexCoords>
               <Size x="16" y="9"/>
               <Anchors>
-                <Anchor point="BOTTOM" relativePoint="BOTTOMLEFT" x="63" y="7.5"/>
+                <Anchor point="BOTTOM" relativePoint="BOTTOMLEFT" x="63" y="10"/>
               </Anchors>
             </Texture>
             <Texture file="Interface/DialogFrame/UI-DialogBox-Divider">
@@ -105,8 +105,8 @@
               </TexCoords>
               <Size x="16"/>
               <Anchors>
-                <Anchor point="TOP" relativePoint="TOPLEFT" x="63" y="-100"/>
-                <Anchor point="BOTTOM" relativePoint="BOTTOMLEFT" x="63" y="16.5"/>
+                <Anchor point="TOP" relativePoint="TOPLEFT" x="63" y="-80"/>
+                <Anchor point="BOTTOM" relativePoint="BOTTOMLEFT" x="63" y="19"/>
               </Anchors>
             </Texture>
           </Layer>
@@ -137,14 +137,14 @@
       <Frame parentKey="category_select">
         <Anchors>
           <Anchor point="TOPLEFT" x="10" y="-27"/>
-          <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-10" y="-84"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-10" y="-64"/>
         </Anchors>
         <!-- Buttons are added programmatically -->
       </Frame>
 
       <Frame parentKey="zone_select">
         <Anchors>
-          <Anchor point="TOPLEFT" x="10" y="-99"/>
+          <Anchor point="TOPLEFT" x="10" y="-79"/>
           <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="60" y="10"/>
         </Anchors>
         <!-- Buttons are added programmatically -->
