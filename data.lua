@@ -144,7 +144,7 @@ local ZONE_GROUPS = {
               {2022, 2023, 2024, 2025, 2151, 2133, 2200}),
     ZoneGroup("Khaz Algar", 2274,
               117238,  -- High Speaker Brinthe
-              {2248, 2214, 2215, 2255, 2346}),
+              {2248, 2214, 2215, 2255, 2346, 2371}),
     ZoneGroup("Eastern Kingdoms", 13,
               "Interface/CHARACTERFRAME/TemporaryPortrait-Male-Human",
               {13}),
@@ -574,6 +574,13 @@ local ZONES = {
          {33.770,76.238,466684, "The Heaps Leap",
                                 {NORMAL    = {85097, 3122, 33, 43},
                                  REVERSE   = {85098, 3123, 33, 43}}},
+    }),
+
+    Zone("K'aresh", 2371, {
+         {75.723,30.609,1230599,"Oasis Overdrive",
+                                {NORMAL    = {86339, 3213, 57, 62},
+                                 ADVANCED  = {86340, 3214, 54, 57},
+                                 REVERSE   = {86341, 3215, 54, 57}}},
     }),
 
     Zone("Eastern Kingdoms", 13, {
