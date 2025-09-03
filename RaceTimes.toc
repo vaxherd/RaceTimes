@@ -1,7 +1,7 @@
 ## Interface: 110200
 ## Title: RaceTimes
 ## Author: vaxherd
-## Version: 3.1
+## Version: 3.2
 ## Category: Other
 ## Category-deDE: Anderes
 ## Category-esES: Otros
